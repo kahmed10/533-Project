@@ -1,0 +1,123 @@
+#######################################################
+### COPIED FROM http://www.tweakers.fr/timings.html ###
+#######################################################
+
+ -Cas# Latency (tCL).
+Number of clocks that elapses between the memory controller telling
+the memory module to access a particular column in the current row,
+and the data from that column being read from the module's output pins.
+
+-RAS# to CAS# Delay (tRCD).
+Controls the number of clocks inserted between a row activate command
+and a read or write command to that row. Last Intel chipset (965 and P35)
+allow to change RAS# to CAS# Read Delay and RAS# to CAS# Write Delay separately
+
+-RAS# Precharge (tRP).
+Controls the number of clocks that are inserted between a row precharge
+command and an activate command to the same rank.
+
+-Activate to Precharge delay (tRAS).
+Number of clocks taken between a bank active command and issuing the
+precharge command. Usually, tRAS=tCL + tRCD + 2.
+
+-Row Cycle Time (tRC).
+Determines the minimum number of clock cycles a memory row takes to
+complete a full cycle, from row activation up to the precharging of
+the active row. For optimal performance, use the lowest value you can,
+according to the tRC = tRAS + tRP formula. For example:
+if your memory module's tRAS is 7 clock cycles and its tRP is 4 clock cycles,
+then the row cycle time or tRC should be 11 clock cycles.
+
+-Refresh to Activate Delay / Refresh Cycle Time (tRFC).
+Determines the number of clock measured from a Refresh command (REF)
+until the first Activate command (ACT) to the same rank
+
+-Refresh Mode Select (RMS) / Refresh Period (tREF).
+Determines at what rate refreshes will be executed. Contrary to other timings,
+higher value is better for performance.
+
+-Command Rate / Command per Clock (1T/2T).
+Delay between when a memory chip is selected and when the first active
+command can be issued. The factors that determine whether a memory
+subsystem can tolerate a 1T command rate are many, including the number
+of memory banks, the number of DIMMs present, and the quality of the DIMMs.
+
+-Performance Level / Read Delay (tRD).
+tRD is the number of memory clocks from DRAM Chip Select# assert
+to Host Data Ready# assertion on the FSB.
+Hight influence on performance and stability.
+
+-Write to Precharge Delay / Write Recovery Time (tWR).
+-Write Recovery time is an internal dram timing, values are usually 3 to 10.
+It specifies the amount of delay (in clock cycles) that must elapse after the
+completion of a valid write operation, before an active bank can be precharged.
+-Write to Precharge is a command delay, and is calculed as:
+Write to Precharge = tCL - 1 +BL/2 + tWR.
+BL(Burst Lenght) practically always 8.
+
+-Write to Read command Delay / Write to Read Delay (tWTR).
+-Write to Read delay is an internal dram timing, values are usually 2 to 8.
+Specifie the number of clock between the last valid write operation and the next
+read command to the same internal bank
+-Write to Read command is a command delay, and is calculed as:
+Write to Read = tCL - 1 +BL/2 + tWTR.
+BL(Burst Lenght) practically always 8.
+
+-Activate to Activate delay (tRRD).
+Number of clocks between two row activate in different banks of the same rank.
+
+-Read to Precharge delay (tRTP).
+Number of clocks that are inserted between a read command to a row
+pre-charge command to the same rank.
+
+-Read to Write delay (tRTW).
+Number of clocks that are inserted between a read command to a write
+command to the same rank.
+
+-Round Trip Latency.
+Number of Uncore clocks that are inserted for Read data after
+a Read Cas# is send to a DIMM.
+
+-Four Activate Window (tFAW).
+Specifies the time window in wich four activates are allowed the same rank.
+
+-Precharge to Precharge delay (tPTP).
+Number of clocks that are inserted between two Precharge command in
+different banks of the same rank.
+
+-Write-Read Command Spacing (tWR-RD).
+This field determines the number of turn-around clocks on the data bus needs
+to be inserted between write command and a subsequent read command on Different Rank.
+
+-Read-Write Command Spacing (tRD-WR).
+This field determines the number of turn-around clocks on the data bus needs
+to be inserted between read command and a subsequent write command on Different Rank.
+
+-Write-Write Command Spacing (tWR-WR).
+This field controls the turnaround time on the DQ bus for WR-WR sequence to
+different ranks in one channel.
+
+-Force Auto Precharge.
+When enabled, force auto Precharging with every read or write command.
+This may be preferred in situation where powers savings is favored over performance.
+
+-Maximum Asynchronous Latency.
+Specify the maximum round trip latency in the system from the processeur to
+the DRAM devices and back.
+
+-Maximum Read Latency.
+Specify the maximum round trip latency in the system from the processeur to
+the DRAM devices and back. This time is specified in NorthBridge clock and
+includes the asynchronous and synchronous latencies.
+
+-Read/Write Queue Bypass
+Specify the number of times that the oldest operation in the DCI read/Write
+queue may be bypassed .
+
+-Queue Bypass Max
+Specify the maximum of times that the oldest memory-access request in
+the DRAM controller queue may be bypassed .
+
+-DRAM Idle timer.
+Determine the number of clocks the DRAM Controller will remain in the idle
+state before it begins precharging all pages.
