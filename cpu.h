@@ -1,12 +1,13 @@
-/** \file
- *  Project:                Migration Sandbox \n
- *  File Name:              cpu.h \n
- *  Date created:           Thurs Feb 18 2016 \n
- *  Engineers:              Conor Gardner \n
- *  Compiler:               g++ \n
- *  Target OS:              Ubuntu Linux 14.04 \n
- *  Target architecture:    x86 64-bit \n */
- 
+/// \file
+/// Project:                Migration Sandbox \n
+/// File Name:              cpu.h \n
+/// Required Libraries:     none \n
+/// Date created:           Thurs Feb 18 2016 \n
+/// Engineers:              Conor Gardner \n
+/// Compiler:               g++ \n
+/// Target OS:              Ubuntu Linux 14.04 \n
+/// Target architecture:    x86 (64 bit) */
+
 #ifndef __HEADER_GUARD_CPU__
 #define __HEADER_GUARD_CPU__
 

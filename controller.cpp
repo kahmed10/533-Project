@@ -27,7 +27,7 @@ controller::controller
 	unsigned num_hmc_modules,
 	unsigned module_size,
 	unsigned page_size,
-	component ** hmcModules
+	memory ** hmcModules
 	){
 
 	this->name = name_;
@@ -46,7 +46,7 @@ controller::controller
 	int eff_mem_size = num_hmc_modules * module_size;
 	int eff_addr_space = log2(eff_mem_size) + 20;
 	if (eff_addr_space != address_length) {
-		printf("Address Ranges do NOT Match, Truncated Address Length to %d bits", &eff_addr_space);
+		printf("Address Ranges do NOT Match, Truncated Address Length to %d bits \n", &eff_addr_space);
 		this->address_length = eff_addr_space;
 	}
 
@@ -73,7 +73,7 @@ void controller::initialize_map()
 	for (unsigned i = 0; i < map_size; i++) {
 		this->mapTable[i] = i;
 	}
-		
+	
 }
 
 void controller::load(__int64 addr)
@@ -112,10 +112,11 @@ void controller::load(__int64 addr)
 	unsigned component_addr = temp_addr;
 
 	// Generate Read Packets
-	packet * readReq = new packet(this, hmcModules[module_dest], READ_REQ, NULL, component_addr, 0);
+	packet * readReq = new packet(this, hmcModules[module_dest], READ_REQ, "Read Op", component_addr, 0);
 	resident_packets.push_back(readReq);
 
-	
+	printf("Load Packet - Original Address: %x Translated Address: %x \n", addr, mem_addr);
+	printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
 }
 
 void controller::store(__int64 addr)
@@ -154,7 +155,9 @@ void controller::store(__int64 addr)
 	unsigned component_addr = temp_addr;
 
 	// Generate Write Packets
-	packet * readReq = new packet(this, hmcModules[module_dest], WRITE_REQ, NULL, component_addr, 0);
+	packet * readReq = new packet(this, hmcModules[module_dest], WRITE_REQ, "Write Op", component_addr, 0);
 	resident_packets.push_back(readReq);
 
+	printf("Load Packet - Original Address: %x Translated Address: %x \n", addr, mem_addr);
+	printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
 }
