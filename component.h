@@ -1,11 +1,12 @@
-/** \file
- *  Project:                Migration Sandbox \n
- *  File Name:              component.h \n
- *  Date created:           Wed Feb 17 2016 \n
- *  Engineers:              Conor Gardner \n
- *  Compiler:               g++ \n
- *  Target OS:              Ubuntu Linux 14.04 \n
- *  Target architecture:    x86 64-bit \n */
+/// \file
+/// Project:                Migration Sandbox \n
+/// File Name:              component.h \n
+/// Required Libraries:     none \n
+/// Date created:           Wed Feb 17 2016 \n
+/// Engineers:              Conor Gardner \n
+/// Compiler:               g++ \n
+/// Target OS:              Ubuntu Linux 14.04 \n
+/// Target architecture:    x86 (64 bit) */
  
 #ifndef __HEADER_GUARD_COMPONENT__
 #define __HEADER_GUARD_COMPONENT__

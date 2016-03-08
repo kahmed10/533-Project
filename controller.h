@@ -1,11 +1,12 @@
-/** \file
-*  Project:                Migration Sandbox \n
-*  File Name:              controller.h \n
-*  Date created:           Mar 1 2016 \n
-*  Engineers:              Dong Kai Wang \n
-*  Compiler:               g++ \n
-*  Target OS:              Scientific Linux 7.1 \n
-*  Target architecture:    x86_64 \n */
+/// \file
+/// Project:                Migration Sandbox \n
+/// File Name:              controller.h \n
+/// Required Libraries:     none \n
+/// Date created:           Mar 1 2016 \n
+/// Engineers:              Dong Kai Wang \n
+/// Compiler:               g++ \n
+/// Target OS:              Scientific Linux 7.1 \n
+/// Target architecture:    x86_64 */
 
 #ifndef __HEADER_GUARD_CONTROLLER__
 #define __HEADER_GUARDC_CONTROLLER__
@@ -13,10 +14,11 @@
 #include <cstdint>
 #include <vector>
 #include "component.h"
+#include "memory.h"
 
 /// \class controller
-///
-///
+/// 
+/// 
 ///                        CPU Physical Memory Address
 ///
 ///                   Index                                Offset
@@ -50,23 +52,23 @@ public:
 		/// Migration Page Size in KBytes
 		unsigned page_size = 64,
 		/// Pointers to Table of HMC Module Components
-		component ** hmcModules = NULL
+		memory ** hmcModules = NULL
 	);
 	
 	/// Frees mapTable Array
 	~controller();
-
-protected:
-
-	/// Initialize Memory Mapping, By Default, The Physical and
-	/// Translated Address will be the Same
-	void initialize_map();
 
 	/// Initiate a Load Operation
 	void load(__int64 addr);
 
 	/// Initiate a Store Operation
 	void store(__int64 addr);
+
+protected:
+
+	/// Initialize Memory Mapping, By Default, The Physical and
+	/// Translated Address will be the Same
+	void initialize_map();
 
 	/// Physical Address Length in Bits
 	unsigned address_length;
@@ -82,7 +84,7 @@ protected:
 
 	/// Pointers to Array of Pointers to HMC Modules in System
 	/// Used to assign Destination Component for Packets
-	component ** hmcModules;
+	memory ** hmcModules;
 
 	/// Shared History Table that keeps track of Hot Pages
 	/// TODO

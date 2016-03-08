@@ -29,6 +29,7 @@ cpu::cpu
     this->max_resident_packets = max_resident_packets_;
     this->routing_latency = routing_latency_;
     this->retirement_latency = retirement_latency_;
+	#pragma warning (disable : 4996)
     this->trace_file = fopen(trace_file_.c_str(), "r");
     if (this->trace_file == NULL)
     {
