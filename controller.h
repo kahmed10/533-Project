@@ -38,11 +38,14 @@ public:
 
 	controller
 	(
+	    /// See component::name
 		const std::string& name_ = "Universal HMC Controller",
+		/// See component::initiation_interval
 		unsigned initiation_interval_ = 0,
+		/// See component::max_resident_packets
 		unsigned max_resident_packets_ = 1024,
+		/// See component::routing_latency
 		unsigned routing_latency_ = 0,
-
 		/// Address Length in Bits, Assuming Byte Addressable Memory
 		unsigned address_length = 40,
 		/// Number of HMC Memory Modules
@@ -59,10 +62,10 @@ public:
 	~controller();
 
 	/// Initiate a Load Operation
-	void load(__int64 addr);
+	void load(uint64_t addr);
 
 	/// Initiate a Store Operation
-	void store(__int64 addr);
+	void store(uint64_t addr);
 
 protected:
 

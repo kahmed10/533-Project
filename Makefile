@@ -8,7 +8,7 @@ ARGS=trace.txt
 all: documentation $(EXENAME)
 
 # add additional .o files on the line below (after main.o)
-$(EXENAME): main.o component.o cpu.o memory.o packet.o
+$(EXENAME): main.o component.o controller.o cpu.o memory.o packet.o
 	$(COMPILER) $(LINKFLAGS) -o $(EXENAME) $^ $(LIBS)
 	@echo "*** COMPILE_SUCCESSFUL ***"
 
@@ -17,6 +17,9 @@ $(EXENAME): main.o component.o cpu.o memory.o packet.o
 # add more .cpp -> .o compile commands here
 
 component.o: component.cpp component.h debug.h packet.h
+	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
+
+controller.o: controller.cpp controller.h debug.h packet.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
 cpu.o: cpu.cpp cpu.h debug.h

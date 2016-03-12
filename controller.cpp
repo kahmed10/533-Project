@@ -16,6 +16,25 @@
 #include "component.h"
 #include "controller.h"
 
+inline unsigned pow2(unsigned exp)
+{
+    return 0x1 << exp;
+}
+
+inline unsigned log2(unsigned x)
+{
+    // 0x1000000 on 32-bit machines
+    unsigned exp = 0;
+    while (true)
+    {
+        x >>= 1;
+        if (x == 0)
+            return exp;
+        exp++;
+    }
+    
+}
+
 controller::controller
 (
 	const std::string& name_,
@@ -43,10 +62,10 @@ controller::controller
 	this->hmcModules = hmcModules;
 
 	// Checking Matching Address Range
-	int eff_mem_size = num_hmc_modules * module_size;
-	int eff_addr_space = log2(eff_mem_size) + 20;
+	unsigned eff_mem_size = num_hmc_modules * module_size;
+	unsigned eff_addr_space = log2(eff_mem_size) + 20;
 	if (eff_addr_space != address_length) {
-		printf("Address Ranges do NOT Match, Truncated Address Length to %d bits \n", &eff_addr_space);
+		printf("Address Ranges do NOT Match, Truncated Address Length to %u bits \n", eff_addr_space);
 		this->address_length = eff_addr_space;
 	}
 
@@ -56,7 +75,7 @@ controller::controller
 	this->index_size = this->address_length - this->offset_size;
 	
 	// Create Mapping Table for Address Translation
-	mapTable = new unsigned[pow(2,index_size)];
+	mapTable = new unsigned[pow2(index_size)];
 	initialize_map();
 	
 }
@@ -69,28 +88,28 @@ controller::~controller()
 void controller::initialize_map()
 {
 	// Default Mapping
-	unsigned map_size = pow(2, index_size);
+	unsigned map_size = pow2(index_size);
 	for (unsigned i = 0; i < map_size; i++) {
 		this->mapTable[i] = i;
 	}
 	
 }
 
-void controller::load(__int64 addr)
+void controller::load(uint64_t addr)
 {
 
 	// Check Address does not Exceed Range
-	if (addr > pow(2, address_length)) {
-		printf("Requesting Address (0x%x) exceeded Address Space", &addr);
+	if (addr > pow2(address_length)) {
+		printf("Requesting Address (0x%lx) exceeded Address Space", addr);
 	}
 
 	// Translated Address
-	__int64 mem_addr;
+	uint64_t mem_addr;
 	
 	// Retrieve Index Bits
 	unsigned idx = addr >> this->offset_size;
 	unsigned nidx = mapTable[idx];
-	__int64 nidx_addr = nidx;
+	uint64_t nidx_addr = nidx;
 	nidx_addr = nidx_addr << offset_size;
 
 	// Clear Old Index Bits
@@ -107,7 +126,7 @@ void controller::load(__int64 addr)
 
 	// Generate HMC Module Internal Address
 	clr_len = 64 - module_bits;
-	__int64 temp_addr = mem_addr << clr_len;
+	uint64_t temp_addr = mem_addr << clr_len;
 	temp_addr = temp_addr >> clr_len;
 	unsigned component_addr = temp_addr;
 
@@ -115,25 +134,25 @@ void controller::load(__int64 addr)
 	packet * readReq = new packet(this, hmcModules[module_dest], READ_REQ, "Read Op", component_addr, 0);
 	resident_packets.push_back(readReq);
 
-	printf("Load Packet - Original Address: %x Translated Address: %x \n", addr, mem_addr);
+	printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
 	printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
 }
 
-void controller::store(__int64 addr)
+void controller::store(uint64_t addr)
 {
 
 	// Check Address does not Exceed Range
-	if (addr > pow(2, address_length)) {
-		printf("Requesting Address (0x%x) exceeded Address Space", &addr);
+	if (addr > pow2(address_length)) {
+		printf("Requesting Address (0x%lx) exceeded Address Space", addr);
 	}
 
 	// Translated Address
-	__int64 mem_addr;
-
+	uint64_t mem_addr;
+    
 	// Retrieve Index Bits
 	unsigned idx = addr >> this->offset_size;
 	unsigned nidx = mapTable[idx];
-	__int64 nidx_addr = nidx;
+	uint64_t nidx_addr = nidx;
 	nidx_addr = nidx_addr << offset_size;
 
 	// Clear Old Index Bits
@@ -150,7 +169,7 @@ void controller::store(__int64 addr)
 
 	// Generate HMC Module Internal Address
 	clr_len = 64 - module_bits;
-	__int64 temp_addr = mem_addr << clr_len;
+	uint64_t temp_addr = mem_addr << clr_len;
 	temp_addr = temp_addr >> clr_len;
 	unsigned component_addr = temp_addr;
 
@@ -158,6 +177,7 @@ void controller::store(__int64 addr)
 	packet * readReq = new packet(this, hmcModules[module_dest], WRITE_REQ, "Write Op", component_addr, 0);
 	resident_packets.push_back(readReq);
 
-	printf("Load Packet - Original Address: %x Translated Address: %x \n", addr, mem_addr);
+	printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
 	printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
+	
 }

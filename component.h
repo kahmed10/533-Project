@@ -42,7 +42,7 @@ class component
         component& operator=(component&& rhs) = default;
         
         /// Destroys the component and deletes all resident packets
-        ~component();
+        virtual ~component();
         
         /// This function is used to form physical connections to other
         /// components as well as teach the component how to route packets
