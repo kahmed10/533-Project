@@ -17,6 +17,8 @@
 #include "component.h"
 #include "controller.h"
 
+using namespace std;
+
 inline uint64_t pow2(unsigned exp)
 {
 	uint64_t res = 1;
@@ -56,7 +58,7 @@ controller::controller
 	this->initiation_interval = initiation_interval_;
 	this->max_resident_packets = max_resident_packets_;
 	this->routing_latency = routing_latency_;
-	this->cooldown = 0;
+	this->cooldown = 5;
 
 	this->address_length = address_length;
 	this->num_hmc_modules = num_hmc_modules;
@@ -150,15 +152,18 @@ void controller::load(uint64_t addr)
 	unsigned component_addr = temp_addr;
 
 	// Generate Read Packets
-	packet * readReq = new packet(this, hmcModules[module_dest], READ_REQ, "Read Op", component_addr, 0);
+	string packetName = "R" + std::to_string(addr);
+	packet * readReq = new packet(this, hmcModules[module_dest], READ_REQ, packetName, component_addr, routing_latency);
 	resident_packets.push_back(readReq);
 
 	// Update History Table
 	hTable[idx] += 1;
 
-	printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
-	printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
-	printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
+	if (DEBUG) {
+		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
+		printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
+		printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
+	}
 }
 
 void controller::store(uint64_t addr)
@@ -197,13 +202,16 @@ void controller::store(uint64_t addr)
 	unsigned component_addr = temp_addr;
 
 	// Generate Write Packets
-	packet * readReq = new packet(this, hmcModules[module_dest], WRITE_REQ, "Write Op", component_addr, 0);
+	string packetName = "W" + std::to_string(addr);
+	packet * readReq = new packet(this, hmcModules[module_dest], WRITE_REQ, packetName, component_addr, routing_latency);
 	resident_packets.push_back(readReq);
 
 	// Update History Table
 	hTable[idx] += 1;
 
-	printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
-	printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
-	printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
+	if (DEBUG) {
+		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
+		printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
+		printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
+	}
 }

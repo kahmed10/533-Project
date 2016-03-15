@@ -146,6 +146,9 @@ class component
             /// [out] Stream to print to
             FILE* file = stdout
         ) const;
+
+		/// Returns Current Number of Resident Packets
+		unsigned num_Packets();
         
     protected:
         

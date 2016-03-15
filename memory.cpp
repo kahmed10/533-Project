@@ -46,6 +46,10 @@ memory::memory
 unsigned memory::retire(unsigned packet_index)
 {
     
+	return component::retire(packet_index);
+
+	// Temporarily Disabled
+	/*
     check
     (
         packet_index < this->resident_packets.size(),
@@ -103,7 +107,7 @@ unsigned memory::retire(unsigned packet_index)
         return UINT_MAX;
         
     }
-    
+	*/
 }
 
 bool memory::row_buffer_hit(unsigned address)

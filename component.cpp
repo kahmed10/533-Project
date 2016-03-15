@@ -10,9 +10,12 @@
 
 #include <cstdio>
 #include <unordered_map>
+#include <iostream>
 #include "component.h"
 #include "debug.h"
 #include "packet.h"
+
+using namespace std;
 
 component::component
 (
@@ -104,13 +107,14 @@ unsigned component::wake_packets()
         {
             unsigned c;
             
-            if (p->final_destination == this)
-                // the packet has reached its final destiny
-                c = this->retire(ix);
-            else
-                // the packet needs to be routed somewhere else
-                c = this->port_out(ix);
-            
+			if (p->final_destination == this) {
+				// the packet has reached its final destiny
+				c = this->retire(ix);
+			}
+			else {
+				// the packet needs to be routed somewhere else
+				c = this->port_out(ix);
+			}
             // only need to account for cooldowns which this function changed
             // in minima calculation
             if (c < min_cooldown)
@@ -173,7 +177,18 @@ unsigned component::port_out(unsigned packet_index)
     // path to its final destination
     packet* p = this->resident_packets[packet_index];
     component* immediate_destination = this->routing_table[p->final_destination];
+	if (immediate_destination == NULL) {
+		cout << "Error: No Immediate Destination for Packet " << p->name << " At Component: " << this->name << endl;
+		cout << "Press Enter to Exit" << endl;
+		getchar();
+		exit(1);
+	}
     
+	if (DEBUG) {
+		cout << "Packet Name: " << resident_packets[packet_index]->name;
+		cout << " At Component: " << this->name;
+		cout << " Sent to Component: " << immediate_destination->name << endl;
+	}
     unsigned new_cooldown = immediate_destination->port_in(packet_index, this);
     // only assign a new cooldown if the migration failed
     if (new_cooldown != UINT_MAX)
@@ -186,6 +201,9 @@ unsigned component::port_out(unsigned packet_index)
 unsigned component::retire(unsigned packet_index)
 {
     // Default behavior is to just delete the packet
+	if (DEBUG) {
+		cout << "Packet Name: " << resident_packets[packet_index]->name << " Has Retired at Component: " << this->name << endl;
+	}
     destroy_packet(packet_index);
     // The packet was destroyed, therefore it will never cooldown
     return UINT_MAX;
@@ -273,3 +291,7 @@ unsigned component::min_packet_cooldown() const
     return min_cooldown;
 }
 
+unsigned component::num_Packets() {
+
+	return resident_packets.size();
+}
