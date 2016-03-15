@@ -17,7 +17,9 @@
 #include "memory.h"
 
 /// \class controller
-/// 
+/// The controller translates the CPU's physical address to the memory's physical
+/// address. The number of index and offset bits is dependent on the mapping page
+/// size (i.e. granularity).
 /// 
 ///                        CPU Physical Memory Address
 ///
@@ -73,6 +75,9 @@ protected:
 	/// Translated Address will be the Same
 	void initialize_map();
 
+	/// Initialize History Table
+	void initialize_hTable();
+
 	/// Physical Address Length in Bits
 	unsigned address_length;
 
@@ -90,7 +95,6 @@ protected:
 	memory ** hmcModules;
 
 	/// Shared History Table that keeps track of Hot Pages
-	/// TODO
 	unsigned * hTable;
 	
 	/// Number of Index bit for the Physical Address

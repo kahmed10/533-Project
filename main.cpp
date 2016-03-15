@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 
     // Controller
     controller HMC_Controller("HMC_C", 0, 1024, 0, 32, num_modules, module_size, page_size, HMC_Modules);
-    cout << "Created HMC Controller" << endl;
+    cout << "Created HMC Controller \n\n" << endl;
 
     // Read Trace
     ifstream memtrace("trace.txt");
@@ -60,11 +60,11 @@ int main(int argc, char** argv)
         }
 
         if (optype == 'R') {
-            cout << "Load Location " << hex << address << endl;
+            cout << "\n Load Location " << hex << address << endl;
             HMC_Controller.load(address);
         }
         else if (optype == 'W') {
-            cout << "Store Location " << hex << address << endl;
+            cout << "\n Store Location " << hex << address << endl;
             HMC_Controller.store(address);
         }
         else {

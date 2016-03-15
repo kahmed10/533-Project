@@ -4,21 +4,24 @@
 /// Required Libraries:     none \n
 /// Date created:           Mar 1 2016 \n
 /// Engineers:              Dong Kai Wang \n
-/// Compiler:               g++ \n
+/// Compiler:               g++ / vc++ \n
 /// Target OS:              Scientific Linux 7.1 \n
 /// Target architecture:    x86_64 */
 
 #include <stdio.h>
 #include <string>
 #include <math.h>
+#include <inttypes.h>
 #include "debug.h"
 #include "packet.h"
 #include "component.h"
 #include "controller.h"
 
-inline unsigned pow2(unsigned exp)
+inline uint64_t pow2(unsigned exp)
 {
-    return 0x1 << exp;
+	uint64_t res = 1;
+	res <<= exp;
+	return res;
 }
 
 inline unsigned log2(unsigned x)
@@ -75,14 +78,21 @@ controller::controller
 	this->index_size = this->address_length - this->offset_size;
 	
 	// Create Mapping Table for Address Translation
+	printf("Creating Map Table\n Index Bits: %d Table Size: %d\n", index_size, pow2(index_size));
 	mapTable = new unsigned[pow2(index_size)];
 	initialize_map();
+
+	// Create Access History Table to Keep Track of Access Frequency
+	printf("Creating History Table\n Index Bits: %d Table Size: %d\n", index_size, pow2(index_size));
+	hTable = new unsigned[pow2(index_size)];
+	initialize_hTable();
 	
 }
 
 controller::~controller()
 {
-	delete [] mapTable;
+	delete[] mapTable;
+	delete[] hTable;
 }
 
 void controller::initialize_map()
@@ -92,15 +102,24 @@ void controller::initialize_map()
 	for (unsigned i = 0; i < map_size; i++) {
 		this->mapTable[i] = i;
 	}
-	
+}
+
+void controller::initialize_hTable()
+{
+	// Initialize Table to 0
+	unsigned table_size = pow2(index_size);
+	for (unsigned i = 0; i < table_size; i++) {
+		this->hTable[i] = 0;
+	}
 }
 
 void controller::load(uint64_t addr)
 {
 
 	// Check Address does not Exceed Range
-	if (addr > pow2(address_length)) {
-		printf("Requesting Address (0x%lx) exceeded Address Space", addr);
+	if (addr > (uint64_t) pow2(address_length)) {
+		printf("Requesting Address (0x%lx) exceeded Address Space \n", addr);
+		printf("Address Length: %d \nMaximum Address is %" PRIu64 " \n", address_length, pow2(address_length));
 	}
 
 	// Translated Address
@@ -134,8 +153,12 @@ void controller::load(uint64_t addr)
 	packet * readReq = new packet(this, hmcModules[module_dest], READ_REQ, "Read Op", component_addr, 0);
 	resident_packets.push_back(readReq);
 
+	// Update History Table
+	hTable[idx] += 1;
+
 	printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
 	printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
+	printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
 }
 
 void controller::store(uint64_t addr)
@@ -143,7 +166,7 @@ void controller::store(uint64_t addr)
 
 	// Check Address does not Exceed Range
 	if (addr > pow2(address_length)) {
-		printf("Requesting Address (0x%lx) exceeded Address Space", addr);
+		printf("Requesting Address (0x%lx) exceeded Address Space \n", addr);
 	}
 
 	// Translated Address
@@ -177,7 +200,10 @@ void controller::store(uint64_t addr)
 	packet * readReq = new packet(this, hmcModules[module_dest], WRITE_REQ, "Write Op", component_addr, 0);
 	resident_packets.push_back(readReq);
 
+	// Update History Table
+	hTable[idx] += 1;
+
 	printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
 	printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
-	
+	printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
 }
