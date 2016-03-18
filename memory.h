@@ -13,7 +13,7 @@
 
 #include <cstdint>
 #include <vector>
-#include "component.h"
+#include "addressable.h"
 
 /// \class memory
 /// If you are not familiar with how a DRAM is built, these sites may
@@ -21,7 +21,7 @@
 /// 1) http://iram.cs.berkeley.edu/kozyraki/project/ee241/report/section.html \n
 /// 2) http://www.tweakers.fr/timings.html \n
 /// 3) http://www.futurechips.org/chip-design-for-all/what-every-programmer-should-know-about-the-memory-system.html
-class memory : public component
+class memory : public addressable
 {
     
     public:
@@ -50,6 +50,10 @@ class memory : public component
             /// stick with 8 banks.
             unsigned columns_ = 2048
         );
+        
+        /// Just to override the pure virtual destructor
+        /// from class \ref addressable
+        ~memory() {};
         
         /// Overrides component::reture.
         /// READ_REQ packets are transformed into READ_RESP packets

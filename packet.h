@@ -2,9 +2,11 @@
  *  Project:                Migration Sandbox \n
  *  File Name:              packet.h \n
  *  Date created:           Wed Feb 17 2017 \n
- *  Engineers:              Conor Gardner \n
+/// Engineers:              Khalique Ahmed
+///                         Conor Gardner
+///                         Dong Kai Wang\n
  *  Compiler:               g++ \n
- *  Target OS:              Ubuntu Linux 14.04 \n
+ *  Target OS:              Ubuntu Linux 14.04 and Windows \n
  *  Target architecture:    x86 64-bit \n */
  
 #ifndef __HEADER_GUARD_PACKET__
@@ -48,18 +50,20 @@ class packet
         /// See member variable declarations
         packet
         (
-            /// [in] See packet::original_source
+            /// [in] See \ref original_source
             component* original_source_,
-            /// [in] see packet::final_destination
+            /// [in] see \ref final_destination
             component* final_destination_,
-            /// [in] see packet::type
+            /// [in] see \ref type
             packetType type_ = INVALID,
-            /// [in] see packet::name
-            const std::string& name_ = "Unnamed Packet",
-            /// [in] see packet::address
+            /// [in] see \ref address
             unsigned address_ = 0,
-            /// [in] see packet::cooldown and component class
-            unsigned cooldown_ = 0
+            /// [in] see \ref bytes_accessed
+            unsigned bytes_accessed_ = 4,
+            /// [in] see \ref cooldown and component class
+            unsigned cooldown_ = 0,
+            /// [in] see \ref name
+            const std::string& name_ = "Unnamed Packet"
         );
         
         /// The component which generated this packet
@@ -84,13 +88,15 @@ class packet
         /// data[n] = address + n...
         unsigned address;
         
+        /// This is the number of bytes transferred whenever this packet
+        /// migrates.  Typically this is a value such as 64 when a cache line
+        /// is read or 256 for a DRAM burst read.
+        unsigned bytes_accessed;
+        
         /// Managed by a component.  This is how long a packet must wait
         /// before it can have another operation performed on it (such as
         /// routing or retirement).
         unsigned cooldown;
-        
-        /// The data associated with read responses and write requests
-        std::vector<uint8_t> data;
         
 };
 

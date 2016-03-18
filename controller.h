@@ -13,8 +13,7 @@
 
 #include <cstdint>
 #include <vector>
-#include "component.h"
-#include "memory.h"
+#include "addressable.h"
 
 /// \class controller
 /// The controller translates the CPU's physical address to the memory's physical
@@ -33,24 +32,36 @@
 ///  |-----------|----------|----------------------|-------------------|---------|
 ///    Module ID    Bank ID         Row ID                Col ID         Byte ID
 ///
-class controller : public component
+class memory;
+
+class controller : public addressable
 {
 
 public:
 
 	controller
 	(
-	    /// See component::name
+		/// [in] The first CPU-physical address that this memory controller
+		/// has access to.  This address does not change when migrations
+		/// occur.
+		uint64_t first_address,
+		/// [in] The last CPU-physical address that this memory controller
+		/// has access to.  This address does not change when migrations
+		/// occur.
+		uint64_t last_address,
+	    /// [in] See component::name
 		const std::string& name_ = "Universal HMC Controller",
-		/// See component::initiation_interval
+		/// [in] See component::initiation_interval
 		unsigned initiation_interval_ = 0,
-		/// See component::max_resident_packets
+		/// [in] See component::max_resident_packets
 		unsigned max_resident_packets_ = 1024,
-		/// See component::routing_latency
+		/// [in] See component::routing_latency
 		unsigned routing_latency_ = 0,
 		/// Address Length in Bits, Assuming Byte Addressable Memory
 		unsigned address_length = 40,
-		/// Number of HMC Memory Modules
+		/// Number of HMC Memory Modules TODO - make this comment better
+		/// by telling us how the number of hmc modules affects address
+		/// mappings
 		unsigned num_hmc_modules = 16,
 		/// Size in MBytes of each HMC Module
 		unsigned module_size = 1024,
@@ -62,7 +73,7 @@ public:
 	
 	/// Frees mapTable Array
 	~controller();
-
+    
 	/// Initiate a Load Operation
 	void load(uint64_t addr);
 

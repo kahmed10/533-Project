@@ -3,7 +3,9 @@
 /// File Name:              component.h \n
 /// Required Libraries:     none \n
 /// Date created:           Wed Feb 17 2016 \n
-/// Engineers:              Conor Gardner \n
+/// Engineers:              Khalique Ahmed
+///                         Conor Gardner
+///                         Dong Kai Wang\n
 /// Compiler:               g++ \n
 /// Target OS:              Ubuntu Linux 14.04 \n
 /// Target architecture:    x86 (64 bit) */
@@ -65,7 +67,7 @@ class component
             component* immediate_destination
         );
         
-        /// Typically called by a motherboard object
+        /// Typically called by a \ref system_driver object
         /// Decreases the cooldowns of all resident_packets and
         /// component::cooldown by time.
         /// This function should be called on all components in a system
@@ -81,7 +83,7 @@ class component
             unsigned time
         );
         
-        /// Typically called by a motherboard object
+        /// Typically called by a \ref system_driver object
         /// This function iteraties through all component::resident_packets
         /// looking for those whose cooldown reaches zero and calling
         /// either port_out() or retire() when it finds them.
@@ -125,8 +127,8 @@ class component
             unsigned packet_index
         );
         
-        /// Typically called by a motherboard object
-        /// 
+        /// Typically called by a \ref system_driver object
+        ///
         /// This function should by called by the external system after
         /// advance_cooldowns() but before wake_packets().  It gives an
         /// opportunity for a component to create new packets

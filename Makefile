@@ -1,3 +1,6 @@
+# If you're using visual studio or an IDE, you don't really need this makefile
+# This is for compiling straight off the Linux terminal
+
 COMPILER=g++
 EXENAME=migration_sandbox
 COMPILEFLAGS=-Wall -Wfatal-errors -std=c++11 -g
@@ -8,7 +11,7 @@ ARGS=trace.txt
 all: documentation $(EXENAME)
 
 # add additional .o files on the line below (after main.o)
-$(EXENAME): main.o component.o controller.o cpu.o memory.o packet.o
+$(EXENAME): addressable.o component.o controller.o cpu.o main.o memory.o packet.o system_driver.o
 	$(COMPILER) $(LINKFLAGS) -o $(EXENAME) $^ $(LIBS)
 	@echo "*** COMPILE_SUCCESSFUL ***"
 
@@ -16,22 +19,28 @@ $(EXENAME): main.o component.o controller.o cpu.o memory.o packet.o
 
 # add more .cpp -> .o compile commands here
 
+addressable.o: addressable.cpp addressable.h component.h
+	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
+
 component.o: component.cpp component.h debug.h packet.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
-controller.o: controller.cpp controller.h debug.h packet.h
+controller.o: controller.cpp addressable.h component.h controller.h debug.h packet.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
-cpu.o: cpu.cpp cpu.h debug.h
+cpu.o: cpu.cpp addressable.h cpu.h debug.h packet.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
-main.o: main.cpp component.h cpu.h memory.h packet.h
+main.o: main.cpp addressable.h component.h controller.h cpu.h memory.h packet.h system_driver.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
-memory.o: memory.cpp component.h debug.h memory.h packet.h
+memory.o: memory.cpp addressable.h component.h debug.h memory.h packet.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
 packet.o: packet.cpp packet.h
+	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
+
+system_driver.o: system_driver.cpp component.h debug.h system_driver.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
 Doxyfile:

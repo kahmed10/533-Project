@@ -42,6 +42,8 @@ inline unsigned log2(unsigned x)
 
 controller::controller
 (
+    uint64_t first_address_,
+    uint64_t last_address_,
 	const std::string& name_,
 	unsigned initiation_interval_,
 	unsigned max_resident_packets_,
@@ -51,9 +53,11 @@ controller::controller
 	unsigned num_hmc_modules,
 	unsigned module_size,
 	unsigned page_size,
-	memory ** hmcModules
-	){
+    memory ** hmcModules
+){
 
+    this->first_address = first_address_;
+    this->last_address = last_address_;
 	this->name = name_;
 	this->initiation_interval = initiation_interval_;
 	this->max_resident_packets = max_resident_packets_;
@@ -80,12 +84,12 @@ controller::controller
 	this->index_size = this->address_length - this->offset_size;
 	
 	// Create Mapping Table for Address Translation
-	printf("Creating Map Table\n Index Bits: %d Table Size: %d\n", index_size, pow2(index_size));
+	printf("Creating Map Table\n Index Bits: %d Table Size: %lu\n", index_size, pow2(index_size));
 	mapTable = new unsigned[pow2(index_size)];
 	initialize_map();
 
 	// Create Access History Table to Keep Track of Access Frequency
-	printf("Creating History Table\n Index Bits: %d Table Size: %d\n", index_size, pow2(index_size));
+	printf("Creating History Table\n Index Bits: %d Table Size: %lu\n", index_size, pow2(index_size));
 	hTable = new unsigned[pow2(index_size)];
 	initialize_hTable();
 	
@@ -120,8 +124,8 @@ void controller::load(uint64_t addr)
 
 	// Check Address does not Exceed Range
 	if (addr > (uint64_t) pow2(address_length)) {
-		printf("Requesting Address (0x%lx) exceeded Address Space \n", addr);
-		printf("Address Length: %d \nMaximum Address is %" PRIu64 " \n", address_length, pow2(address_length));
+		fprintf(stderr, "Requesting Address (0x%lx) exceeded Address Space \n", addr);
+		fprintf(stderr, "Addres Length: %d \nMaximum Address is %" PRIu64 " \n", address_length, pow2(address_length));
 	}
 
 	// Translated Address
@@ -152,9 +156,18 @@ void controller::load(uint64_t addr)
 	unsigned component_addr = temp_addr;
 
 	// Generate Read Packets
-	string packetName = "R" + std::to_string(addr);
-	packet * readReq = new packet(this, hmcModules[module_dest], READ_REQ, packetName, component_addr, routing_latency);
-	resident_packets.push_back(readReq);
+	// TODO - move packet generation to CPU
+//	string packetName = "R" + std::to_string(addr);
+//	packet * readReq = new packet
+//	(
+//	    (component*)this,
+//	    hmcModules[module_dest],
+//	    READ_REQ,
+//	    packetName,
+//	    component_addr,
+//	    routing_latency
+//    );
+//	resident_packets.push_back(readReq);
 
 	// Update History Table
 	hTable[idx] += 1;
@@ -203,8 +216,9 @@ void controller::store(uint64_t addr)
 
 	// Generate Write Packets
 	string packetName = "W" + std::to_string(addr);
-	packet * readReq = new packet(this, hmcModules[module_dest], WRITE_REQ, packetName, component_addr, routing_latency);
-	resident_packets.push_back(readReq);
+	// TODO - move packet generation to CPU
+    // packet * readReq = new packet(this, hmcModules[module_dest], WRITE_REQ, packetName, component_addr, routing_latency);
+	// resident_packets.push_back(readReq);
 
 	// Update History Table
 	hTable[idx] += 1;
@@ -214,4 +228,5 @@ void controller::store(uint64_t addr)
 		printf("Packet Sent To HMC Module: %d Internal Address: %x \n", module_dest, component_addr);
 		printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
 	}
+	
 }
