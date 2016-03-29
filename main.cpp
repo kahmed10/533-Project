@@ -44,7 +44,31 @@ int main(int argc, char** argv)
         return -1;
     }
     
-    // TODO - instantiate a system driver here and add components to it...
+    // Each memory (named after a rock) is 64KB
+    // There are 5 memories ~ 320KB total
+    //
+    //                                        0003000
+    //                                        0003FFF
+    //
+    //                                         mercoxit
+    //                                       /          \
+    //                                      /            \
+    // z80  ---  plagioclase  ---  scordite               pyroxeres
+    //                                      \            /
+    //           00000000        00010000    \          /  00040000
+    //           0000FFFF        0001FFFF      veldspar    0004FFFF
+    //
+    //                                        00020000
+    //                                        0002FFFF
+    
+    system_driver motherboard;
+    
+    cpu z80("trace_simple.txt", "z80");
+    memory plagioclase(0x00000000, 0x0000FFFF, "plagioclase");
+    memory scordite(0x00000000, 00000000, "scordite");
+    memory veldspar(0x00000000, 00000000, "")
+    memory (0x00000000, 00000000, "")
+    memory (0x00000000, 00000000, "")
     
     return 0;
     

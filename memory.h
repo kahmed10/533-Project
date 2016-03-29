@@ -28,6 +28,12 @@ class memory : public addressable
         
         memory
         (
+            /// [in] The first CPU physical address mapped to this memory
+            /// CPU physical addresses do not change when migrations occur
+            unsigned first_address_,
+            /// [in] The last CPU physical address mapped to this memory
+            /// CPU physical addresses do not change when migrations occur
+            unsigned last_address_,
             /// [in] See component::name
             const std::string& name_ = "Unnamed Memory",
             /// [in] See component::initiation_interval

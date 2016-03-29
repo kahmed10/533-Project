@@ -31,15 +31,15 @@ class cpu : public component
             /// [in] See \ref trace_file
             const std::string& trace_file_,
             /// [in] See \ref component::name
-            const std::string& name_,
+            const std::string& name_ = "Unnamed CPU",
             /// [in] See \ref component::initiation_interval
-            unsigned initiation_interval_,
+            unsigned initiation_interval_ = 0,
             /// [in] See \ref component::initiation_interval
-            unsigned max_resident_packets_,
+            unsigned max_resident_packets_ = 1024,
             /// [in] See \ref component::routing_latency
-            unsigned routing_latency_,
+            unsigned routing_latency_ = 0,
             /// [in] See \ref component::retirement_latency
-            unsigned retirement_latency_
+            unsigned retirement_latency_ = 0
         );
         
         /// Read some of the trace_file and generate read / write packets

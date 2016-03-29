@@ -17,6 +17,8 @@
 
 memory::memory
 (
+    unsigned first_address_,
+    unsigned last_address_,
     const std::string& name_,
     unsigned initiation_interval_,
     unsigned max_resident_packets_,
@@ -28,6 +30,8 @@ memory::memory
 ){
     
     check(max_resident_packets > 1, "Max resident packets must be at least 1");
+    this->first_address = first_address_;
+    this->last_address = last_address_;
     this->name = name_;
     this->initiation_interval = initiation_interval_;
     this->max_resident_packets = max_resident_packets_;
