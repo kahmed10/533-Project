@@ -39,16 +39,16 @@ class memory : public addressable
             /// [in] See component::initiation_interval
             unsigned initiaition_interval_ = 1,
             /// [in] See component::max_resident_packets
-            unsigned max_resident_packets_ = 1,
+            unsigned max_resident_packets_ = 8,
             /// [in] See component::routing_latency
             unsigned routing_latency_ = 0,
             /// [in] Cooldown that elapses for reading or writing a location
             /// within the current row (row buffer hit).
-            unsigned tCL = 0,
+            unsigned tCL = 5,
             /// [in] The additional cooldown (in addition to tCL) which must
             /// elapse when accessing an address outside the current row
             /// (row buffer miss).
-            unsigned tRC_ = 0,
+            unsigned tRC_ = 10,
             /// [in] Default is a reasonable value for a 512 Megabyte DDR3
             /// stick with 8 banks.
             unsigned rows_ = 32768,

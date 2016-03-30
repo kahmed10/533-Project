@@ -13,6 +13,7 @@
 #ifndef __HEADER_GUARD_COMPONENT__
 #define __HEADER_GUARD_COMPONENT__
 
+#include <iostream>
 #include <unordered_map>
 #include <vector>
 
@@ -146,17 +147,19 @@ class component
         void print
         (
             /// [out] Stream to print to
-            FILE* file = stdout
+            std::ostream* file = &(std::cout)
         ) const;
-
+        
+        
+        
 		/// Returns Current Number of Resident Packets
 		unsigned num_Packets();
-        
-    protected:
         
         /// A human readable name which is displayed whenever
         /// print() is called
         std::string name;
+        
+    protected:
         
         /// After a component sucessfully accepts a packet through a call
         /// to port_in(), you must wait at least 

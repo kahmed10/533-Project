@@ -11,6 +11,7 @@
 /// Target architecture:    x86 (64 bit) */
 
 #include <climits>
+#include <iostream>
 #include "component.h"
 #include "debug.h"
 #include "system_driver.h"
@@ -39,11 +40,29 @@ unsigned long system_driver::simulate()
     
     unsigned long elapsed_ticks = 0;
     
+    unsigned advancement_accumulator;
     unsigned advancement_amount;
-    unsigned advancement_accumulator = UINT_MAX;
     unsigned num_resident_components = this->resident_components.size();
+    unsigned iteration = 1;
     do
     {
+        
+        advancement_accumulator = UINT_MAX;
+        
+        // print...
+        std::cout
+            << std::endl << std::endl
+            << "### Iteration "
+            << iteration
+            << "   Elapsed Time "
+            << elapsed_ticks
+            << " ###"
+            << std::endl;
+        iteration++;
+        for (unsigned ix = 0; ix < num_resident_components; ix++)
+        {
+            this->resident_components[ix]->print();
+        }
         
         // generate...
         for (unsigned ix = 0; ix < num_resident_components; ix++)

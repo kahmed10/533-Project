@@ -6,15 +6,16 @@
     #define check(condition, message) \
         if (!(condition)) \
         { \
-            fprintf \
-            ( \
-                stderr, \
-                "Error in %s line %u ~ %s\n", \
-                __FILE__, \
-                __LINE__, \
-                message \
-            ); \
+            std::cerr \
+                << "Error in " \
+                << __FILE__ \
+                << " line " \
+                << __LINE__ \
+                << " ~ " \
+                << message \
+                << std::endl; \
         }
 #else
     #define check(condition, message) {}
 #endif
+

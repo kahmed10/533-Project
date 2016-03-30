@@ -58,6 +58,9 @@ run: $(EXENAME)
 valgrind: $(EXENAME)
 	valgrind --leak-check=full ./$(EXENAME) $(ARGS)
 
+nemiver: $(EXENAME)
+	nemiver ./$(EXENAME) $(ARGS) &
+
 documentation: Doxyfile mainpage.md $(ls *.cpp *.h)
 	doxygen Doxyfile
 

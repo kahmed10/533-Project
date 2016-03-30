@@ -8,7 +8,6 @@
 /// Target OS:              Ubuntu Linux 14.04 \n
 /// Target architecture:    x86 (64 bit) */
 
-#include <cstdio>
 #include <unordered_map>
 #include <iostream>
 #include "component.h"
@@ -95,10 +94,10 @@ unsigned component::wake_packets()
     // Iterate through all resident packets, looking for ones that are
     // cooled down
     unsigned min_cooldown = UINT_MAX;
+    // must check size() every time in loop in case a packet
+    // migrates away, dies, or is generated
     for (unsigned ix = 0; ix < this->resident_packets.size(); ix++)
     {
-        // must check size() every time incase packets migrated away, died,
-        // or new ones were generated
         
         packet* p = this->resident_packets[ix];
         
@@ -152,6 +151,10 @@ unsigned component::port_in(unsigned packet_index, component* source)
         this->move_packet(packet_index, source, this)
     ];
     
+    // since this component just accepted a packet, the component
+    // itself needs to cool down before accepting another
+    this->cooldown = this->initiation_interval;
+    
     // calculate new packet cooldown
     if (p->final_destination == this)
         p->cooldown = this->retirement_latency;
@@ -184,15 +187,25 @@ unsigned component::port_out(unsigned packet_index)
 		exit(1);
 	}
     
-	if (DEBUG) {
-		cout << "Packet Name: " << resident_packets[packet_index]->name;
-		cout << " At Component: " << this->name;
-		cout << " Sent to Component: " << immediate_destination->name << endl;
-	}
     unsigned new_cooldown = immediate_destination->port_in(packet_index, this);
     // only assign a new cooldown if the migration failed
     if (new_cooldown != UINT_MAX)
         p->cooldown = new_cooldown;
+    
+if (DEBUG) {
+    if (new_cooldown == UINT_MAX)
+    {
+    	cout
+    	    << "Migrated \""
+    	    << p->name
+    	    << "\" from \""
+    	    << this->name
+    	    << "\" to \""
+    	    << this->routing_table[p->final_destination]->name
+    	    << '\"'
+    	    << endl;
+    }
+}
     
     return new_cooldown;
     
@@ -200,10 +213,16 @@ unsigned component::port_out(unsigned packet_index)
 
 unsigned component::retire(unsigned packet_index)
 {
+// temporary for debugging. DELETE ME
+cout
+    << '\"'
+    << resident_packets[packet_index]->name
+    << "\" has retired at \""
+    << this->name
+    << '\"'
+    << endl;
+    
     // Default behavior is to just delete the packet
-	if (DEBUG) {
-		cout << "Packet Name: " << resident_packets[packet_index]->name << " Has Retired at Component: " << this->name << endl;
-	}
     destroy_packet(packet_index);
     // The packet was destroyed, therefore it will never cooldown
     return UINT_MAX;
@@ -215,29 +234,33 @@ unsigned component::generate()
     return UINT_MAX;
 }
 
-void component::print(FILE* file) const
+void component::print(std::ostream* file) const
 {
     
     // print component name
-    fprintf(file, "Component: %s\n", this->name.c_str());
+    *file << '\"' << this->name << "\" cooldown = " << this->cooldown << endl;
     
     // print all resident packet's names
     unsigned num_resident_packets = this->resident_packets.size();
-    for (unsigned ix = 0; ix < num_resident_packets; ix++)
+    if (num_resident_packets == 0)
     {
-        const packet* p = this->resident_packets[ix];
-        fprintf
-        (
-            file,
-            "\tPacket %u: %s {%s --> %s} cooldown = %u\n",
-            ix,
-            p->name.c_str(),
-            p->original_source->name.c_str(),
-            p->final_destination->name.c_str(),
-            p->cooldown
-        );
+        *file << "\tEmpty" << endl;
+    } else {
+        for (unsigned ix = 0; ix < num_resident_packets; ix++)
+        {
+            const packet* p = this->resident_packets[ix];
+            *file
+                << "\t\""
+                << p->name
+                << "\" {\""
+                << p->original_source->name
+                << "\" --> \""
+                << p->final_destination->name
+                << "\"} cooldown = "
+                << p->cooldown
+                << endl;
+        }
     }
-    
 }
 
 unsigned component::move_packet

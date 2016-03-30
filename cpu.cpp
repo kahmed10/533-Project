@@ -52,6 +52,9 @@ cpu::cpu
 unsigned cpu::generate()
 {
     
+    // increments every time a packet is generated to give it a unique name
+    static unsigned long packet_number = 0;
+    
     // debugging checks
     check
     (
@@ -60,8 +63,8 @@ unsigned cpu::generate()
     );
         
     // Don't do anything if we've gone through the whole trace already
-    if (this->trace_file.is_open())
-        return 0;
+    if (!this->trace_file.is_open())
+        return this->min_packet_cooldown();
     
     // This actually should never (rarely) happen but is included for
     // extra robustness against files that are corrupt but open successfully.
@@ -77,14 +80,16 @@ unsigned cpu::generate()
     // If there are more than 3 available spaces for resident packets,
     // read the memory trace to generate read/write packets until there are
     // only 3 empty spaces left.
-    long signed space_to_fill =
-        (long signed)this-max_resident_packets
+    signed long space_to_fill =
+        (signed long)(this->max_resident_packets)
       - 3
-      - (long signed)this->resident_packets.size();
+      - (long signed)(this->resident_packets.size());
+    
     if (space_to_fill > 0)
     {
         
         unsigned new_size = this->max_resident_packets - 3;
+        this->resident_packets.reserve(new_size);
         for (unsigned ix = this->resident_packets.size(); ix < new_size; ix++)
         {
             
@@ -92,14 +97,14 @@ unsigned cpu::generate()
             // either 'R' for read or 'W' for write
             char rw;
             this->trace_file >> rw;
-            if (rw != 'R' || rw != 'W')
+            if (rw != 'R' && rw != 'W')
             {
                 std::cerr
                     << "Error. CPU "
                     << this->name
                     << " Encountered unknown access type '"
                     << rw
-                    << "'.  While reading memory traceOnly 'R' or 'W' are allowed"
+                    << "'.  While reading memory trace. Only 'R' or 'W' are allowed"
                     << std::endl;
             }
             
@@ -109,6 +114,14 @@ unsigned cpu::generate()
             uint64_t address;
             this->trace_file >> address;
             
+            // if we reached the end of the file or encountered an error on
+            // the previous iteration, don't generate any more packets
+            if (!this->trace_file.good())
+            {
+                this->trace_file.close();
+                break;
+            }
+            
             // calculate the destination component containing this address
             addressable* destination = NULL;
             unsigned num_addressables = this->memory_devices.size();
@@ -117,7 +130,7 @@ unsigned cpu::generate()
                 if (this->memory_devices[ix]->contains_address(address))
                 {
                     destination = this->memory_devices[ix];
-                    continue; // for loop - read next item in memory trace
+                    break;
                 }
             }
             if (destination == NULL)
@@ -136,10 +149,20 @@ unsigned cpu::generate()
                 this,           // original source
                 destination,    // memory containing requested data word
                 rw == 'R' ? READ_REQ : WRITE_REQ,
-                address
+                address,
+                4,  // bytes accessed
+                0,  // cooldown
+                this->name
+                    + (rw == 'R' ? " read " : " write ")
+                    + std::to_string(packet_number)
+                    // name
             );
             this->resident_packets.push_back(p);
-            
+            packet_number++;
+
+// debugging - DELETE ME
+std::cout << "Generated \"" << p->name << '\"' << std::endl;
+
         }
         
     }
@@ -152,7 +175,7 @@ unsigned cpu::generate()
 
 void cpu::add_addressable(addressable* a)
 {
-    check(a != NULL, "Pass");
+    check(a != NULL, "CPU can not register NULL addressable");
     this->memory_devices.push_back(a);
 }
 
