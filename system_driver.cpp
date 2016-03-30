@@ -41,7 +41,7 @@ unsigned long system_driver::simulate()
     unsigned long elapsed_ticks = 0;
     
     unsigned advancement_accumulator;
-    unsigned advancement_amount;
+    unsigned advancement_amount = 0;
     unsigned num_resident_components = this->resident_components.size();
     unsigned iteration = 1;
     do

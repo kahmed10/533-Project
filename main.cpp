@@ -42,8 +42,8 @@ int main(int argc, char** argv)
         return -1;
     }
     
-    // construct components
-    // these must be allocated on the heap since the system driver
+    // Construct components
+    // These must be allocated on the heap since the system driver
     // declared later in main() will delete all of its resident components
     // upon destruction
     cpu* z80 = new cpu("trace_simple.txt", "z80");
@@ -53,8 +53,8 @@ int main(int argc, char** argv)
     memory* mercoxit = new memory(0x00030000, 0x0003FFFF, "mercoxit");
     memory* pyroxeres = new memory(0x00040000, 0x0004FFFF, "pyroxeres");
     
-    // initialize routing tables
-    // these help each component move packets destined for far
+    // Initialize routing tables
+    // These help each component move packets destined for far
     // away components to the next waypoint
     
     // Each memory (named after a rock) is 64KB                             //
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
     pyroxeres->add_route(mercoxit, mercoxit);
     pyroxeres->add_route(veldspar, veldspar);
     
-    // register all components with a system driver which
+    // Register all components with a system driver which
     // drives packets generation/routing/retirement
     system_driver motherboard;
     motherboard.add_component(z80);
@@ -126,6 +126,8 @@ int main(int argc, char** argv)
     motherboard.add_component(veldspar);
     motherboard.add_component(pyroxeres);
     
+    // Run simulation to completion using
+    // the component topology established above
     motherboard.simulate();
     
     return 0;

@@ -58,6 +58,8 @@ run: $(EXENAME)
 valgrind: $(EXENAME)
 	valgrind --leak-check=full ./$(EXENAME) $(ARGS)
 
+# nemiver is a graphical C++ debugger for linux (sudo apt-get install nemiver)
+# you don't need to use it if you prefer other methods like gdb
 nemiver: $(EXENAME)
 	nemiver ./$(EXENAME) $(ARGS) &
 

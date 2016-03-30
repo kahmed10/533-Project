@@ -47,6 +47,8 @@ cpu::cpu
     // just allocate it now
     this->resident_packets.reserve(max_resident_packets_);
     
+    this->cooldown = 0;
+    
 }
 
 unsigned cpu::generate()
