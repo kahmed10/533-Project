@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <vector>
 #include "addressable.h"
+#include "memory.h"
 
 /// \class controller
 /// The controller translates the CPU's physical address to the memory's physical
@@ -32,7 +33,6 @@
 ///  |-----------|----------|----------------------|-------------------|---------|
 ///    Module ID    Bank ID         Row ID                Col ID         Byte ID
 ///
-class memory;
 
 class controller : public addressable
 {
@@ -63,9 +63,7 @@ public:
 		/// by telling us how the number of hmc modules affects address
 		/// mappings
 		unsigned num_hmc_modules = 16,
-		/// Size in MBytes of each HMC Module
-		unsigned module_size = 1024,
-		/// Migration Page Size in KBytes
+		/// Migration Page Size in Bytes
 		unsigned page_size = 64,
 		/// Pointers to Table of HMC Module Components
 		memory ** hmcModules = NULL
@@ -75,10 +73,13 @@ public:
 	~controller();
     
 	/// Initiate a Load Operation
-	void load(uint64_t addr);
+	void load(packet* p);
 
 	/// Initiate a Store Operation
-	void store(uint64_t addr);
+	void store(packet* p);
+
+	/// Inherit Port In
+	unsigned port_in(unsigned packet_index, component * source);
 
 protected:
 
@@ -89,13 +90,14 @@ protected:
 	/// Initialize History Table
 	void initialize_hTable();
 
+	/// Determine Destination HMC Module from Address
+	component* findDestination(uint64_t addr);
+
 	/// Physical Address Length in Bits
 	unsigned address_length;
 
-	/// Number of HMC Modules and Size of each Module (in MB)
-	/// Address Ranges must Match
+	/// Number of HMC Modules
 	unsigned num_hmc_modules;
-	unsigned module_size;
 
 	/// Shared Mapping Table that translates the CPU's
 	/// Physical Address to the HMC's current Address mapping
@@ -113,6 +115,9 @@ protected:
 
 	/// Number of Offset bits for the Physical Address
 	unsigned offset_size;
+
+	/// Size of Mapping and History Table
+	unsigned table_size;
 	
 	/// Migration Page Size in KBytes
 	unsigned page_size;

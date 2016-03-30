@@ -1,0 +1,989 @@
+Creating Map Table
+ Index Bits: 13 Table Size: 5119
+Creating History Table
+ Index Bits: 13 Table Size: 5119
+
+
+### Iteration 1   Elapsed Time 0 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 5
+	Empty
+Generated "z80 read 0"
+Generated "z80 read 1"
+Generated "z80 read 2"
+Generated "z80 read 3"
+Generated "z80 read 4"
+Generated "z80 write 5"
+Generated "z80 write 6"
+Generated "z80 write 7"
+Generated "z80 write 8"
+Generated "z80 write 9"
+
+
+### Iteration 2   Elapsed Time 0 ###
+"z80" cooldown = 0
+	"z80 read 0" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 8" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 9" {"z80" --> "HMC Controller"} cooldown = 5
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 5
+	Empty
+
+
+### Iteration 3   Elapsed Time 5 ###
+"z80" cooldown = 0
+	"z80 read 0" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 8" {"z80" --> "HMC Controller"} cooldown = 5
+	"z80 write 9" {"z80" --> "HMC Controller"} cooldown = 5
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 5
+	Empty
+Load Packet - Original Address: 0 Translated Address: 0 
+Packet Sent To HMC Module: plagioclase
+Updated Access Table: hTable[0] = 1 
+Migrated "z80 read 0" from "z80" to "HMC Controller"
+
+
+### Iteration 4   Elapsed Time 5 ###
+"z80" cooldown = 0
+	"z80 write 9" {"z80" --> "HMC Controller"} cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 8" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 1
+
+
+### Iteration 5   Elapsed Time 5 ###
+"z80" cooldown = 0
+	"z80 write 9" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 8" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 1
+
+
+### Iteration 6   Elapsed Time 6 ###
+"z80" cooldown = 0
+	"z80 write 9" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 8" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 1
+Load Packet - Original Address: 40000 Translated Address: 40000 
+Packet Sent To HMC Module: pyroxeres
+Updated Access Table: hTable[4096] = 1 
+Migrated "z80 write 9" from "z80" to "HMC Controller"
+Migrated "z80 read 0" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 7   Elapsed Time 6 ###
+"z80" cooldown = 0
+	"z80 write 8" {"z80" --> "HMC Controller"} cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 5
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 1
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 1
+
+
+### Iteration 8   Elapsed Time 6 ###
+"z80" cooldown = 0
+	"z80 write 8" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 5
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 1
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 1
+
+
+### Iteration 9   Elapsed Time 7 ###
+"z80" cooldown = 0
+	"z80 write 8" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 5
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 1
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 1
+Load Packet - Original Address: 30000 Translated Address: 30000 
+Packet Sent To HMC Module: mercoxit
+Updated Access Table: hTable[3072] = 1 
+Migrated "z80 write 8" from "z80" to "HMC Controller"
+Migrated "z80 write 9" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 10   Elapsed Time 7 ###
+"z80" cooldown = 0
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 4
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 0
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 1
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 1
+Migrated "z80 write 9" from "plagioclase" to "scordite"
+Migrated "z80 write 9" from "scordite" to "mercoxit"
+Migrated "z80 write 9" from "mercoxit" to "pyroxeres"
+
+
+### Iteration 11   Elapsed Time 7 ###
+"z80" cooldown = 0
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 4
+"scordite" cooldown = 1
+	Empty
+"mercoxit" cooldown = 1
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 1
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 5
+"HMC Controller" cooldown = 1
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 1
+
+
+### Iteration 12   Elapsed Time 8 ###
+"z80" cooldown = 0
+	"z80 write 7" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 4
+"scordite" cooldown = 1
+	Empty
+"mercoxit" cooldown = 1
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 1
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 5
+"HMC Controller" cooldown = 1
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 1
+Load Packet - Original Address: 20000 Translated Address: 20000 
+Packet Sent To HMC Module: veldspar
+Updated Access Table: hTable[2048] = 1 
+Migrated "z80 write 7" from "z80" to "HMC Controller"
+Migrated "z80 write 8" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 13   Elapsed Time 8 ###
+"z80" cooldown = 0
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 3
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 0
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 4
+"HMC Controller" cooldown = 1
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 1
+Migrated "z80 write 8" from "plagioclase" to "scordite"
+Migrated "z80 write 8" from "scordite" to "mercoxit"
+
+
+### Iteration 14   Elapsed Time 8 ###
+"z80" cooldown = 0
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 3
+"scordite" cooldown = 1
+	Empty
+"mercoxit" cooldown = 1
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 5
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 4
+"HMC Controller" cooldown = 1
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 1
+
+
+### Iteration 15   Elapsed Time 9 ###
+"z80" cooldown = 0
+	"z80 write 6" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 3
+"scordite" cooldown = 1
+	Empty
+"mercoxit" cooldown = 1
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 5
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 4
+"HMC Controller" cooldown = 1
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 1
+Load Packet - Original Address: 10000 Translated Address: 10000 
+Packet Sent To HMC Module: scordite
+Updated Access Table: hTable[1024] = 1 
+Migrated "z80 write 6" from "z80" to "HMC Controller"
+Migrated "z80 write 7" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 16   Elapsed Time 9 ###
+"z80" cooldown = 0
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 2
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 0
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 4
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 3
+"HMC Controller" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 1
+Migrated "z80 write 7" from "plagioclase" to "scordite"
+Migrated "z80 write 7" from "scordite" to "veldspar"
+
+
+### Iteration 17   Elapsed Time 9 ###
+"z80" cooldown = 0
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 2
+"scordite" cooldown = 1
+	Empty
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 4
+"veldspar" cooldown = 1
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 5
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 3
+"HMC Controller" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 1
+
+
+### Iteration 18   Elapsed Time 10 ###
+"z80" cooldown = 0
+	"z80 write 5" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 2
+"scordite" cooldown = 1
+	Empty
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 4
+"veldspar" cooldown = 1
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 5
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 3
+"HMC Controller" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 1
+Load Packet - Original Address: 0 Translated Address: 0 
+Packet Sent To HMC Module: plagioclase
+Updated Access Table: hTable[0] = 2 
+Migrated "z80 write 5" from "z80" to "HMC Controller"
+Migrated "z80 write 6" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 19   Elapsed Time 10 ###
+"z80" cooldown = 0
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 0
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 3
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 4
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 2
+"HMC Controller" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 1
+Migrated "z80 write 6" from "plagioclase" to "scordite"
+
+
+### Iteration 20   Elapsed Time 10 ###
+"z80" cooldown = 0
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 1
+"scordite" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 5
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 3
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 4
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 2
+"HMC Controller" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 1
+
+
+### Iteration 21   Elapsed Time 11 ###
+"z80" cooldown = 0
+	"z80 read 4" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 read 0" {"z80" --> "plagioclase"} cooldown = 1
+"scordite" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 5
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 3
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 4
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 2
+"HMC Controller" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 1
+Load Packet - Original Address: 40000 Translated Address: 40000 
+Packet Sent To HMC Module: pyroxeres
+Updated Access Table: hTable[4096] = 2 
+Migrated "z80 read 4" from "z80" to "HMC Controller"
+"z80 read 0" has retired at "plagioclase"
+Migrated "z80 write 5" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 22   Elapsed Time 11 ###
+"z80" cooldown = 0
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 5
+"scordite" cooldown = 0
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 4
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 2
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 3
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 1
+"HMC Controller" cooldown = 1
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 1
+
+
+### Iteration 23   Elapsed Time 11 ###
+"z80" cooldown = 0
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 5
+"scordite" cooldown = 0
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 4
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 2
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 3
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 1
+"HMC Controller" cooldown = 1
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 1
+
+
+### Iteration 24   Elapsed Time 12 ###
+"z80" cooldown = 0
+	"z80 read 3" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 5
+"scordite" cooldown = 0
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 4
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 2
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 3
+"pyroxeres" cooldown = 0
+	"z80 write 9" {"z80" --> "pyroxeres"} cooldown = 1
+"HMC Controller" cooldown = 1
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 1
+Load Packet - Original Address: 30000 Translated Address: 30000 
+Packet Sent To HMC Module: mercoxit
+Updated Access Table: hTable[3072] = 2 
+Migrated "z80 read 3" from "z80" to "HMC Controller"
+"z80 write 9" has retired at "pyroxeres"
+Migrated "z80 read 4" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 25   Elapsed Time 12 ###
+"z80" cooldown = 0
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 4
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 0
+"scordite" cooldown = 0
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 3
+"mercoxit" cooldown = 0
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 1
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 2
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 1
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 1
+Migrated "z80 read 4" from "plagioclase" to "scordite"
+Migrated "z80 read 4" from "scordite" to "mercoxit"
+Migrated "z80 read 4" from "mercoxit" to "pyroxeres"
+
+
+### Iteration 26   Elapsed Time 12 ###
+"z80" cooldown = 0
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 4
+"scordite" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 3
+"mercoxit" cooldown = 1
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 1
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 2
+"pyroxeres" cooldown = 1
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 5
+"HMC Controller" cooldown = 1
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 1
+
+
+### Iteration 27   Elapsed Time 13 ###
+"z80" cooldown = 0
+	"z80 read 2" {"z80" --> "HMC Controller"} cooldown = 1
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 4
+"scordite" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 3
+"mercoxit" cooldown = 1
+	"z80 write 8" {"z80" --> "mercoxit"} cooldown = 1
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 2
+"pyroxeres" cooldown = 1
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 5
+"HMC Controller" cooldown = 1
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 1
+Load Packet - Original Address: 20000 Translated Address: 20000 
+Packet Sent To HMC Module: veldspar
+Updated Access Table: hTable[2048] = 2 
+Migrated "z80 read 2" from "z80" to "HMC Controller"
+"z80 write 8" has retired at "mercoxit"
+Migrated "z80 read 3" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 28   Elapsed Time 13 ###
+"z80" cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 0
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 3
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 0
+"scordite" cooldown = 0
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 2
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 1
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 4
+"HMC Controller" cooldown = 1
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 1
+Migrated "z80 read 3" from "plagioclase" to "scordite"
+Migrated "z80 read 3" from "scordite" to "mercoxit"
+
+
+### Iteration 29   Elapsed Time 13 ###
+"z80" cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 3
+"scordite" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 2
+"mercoxit" cooldown = 1
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 5
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 1
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 4
+"HMC Controller" cooldown = 1
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 1
+
+
+### Iteration 30   Elapsed Time 14 ###
+"z80" cooldown = 0
+	"z80 read 1" {"z80" --> "HMC Controller"} cooldown = 1
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 3
+"scordite" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 2
+"mercoxit" cooldown = 1
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 5
+"veldspar" cooldown = 0
+	"z80 write 7" {"z80" --> "veldspar"} cooldown = 1
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 4
+"HMC Controller" cooldown = 1
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 1
+Load Packet - Original Address: 10000 Translated Address: 10000 
+Packet Sent To HMC Module: scordite
+Updated Access Table: hTable[1024] = 2 
+Migrated "z80 read 1" from "z80" to "HMC Controller"
+"z80 write 7" has retired at "veldspar"
+Migrated "z80 read 2" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 31   Elapsed Time 14 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 2
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 0
+"scordite" cooldown = 0
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 1
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 4
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 3
+"HMC Controller" cooldown = 1
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 1
+Migrated "z80 read 2" from "plagioclase" to "scordite"
+Migrated "z80 read 2" from "scordite" to "veldspar"
+
+
+### Iteration 32   Elapsed Time 14 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 2
+"scordite" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 1
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 4
+"veldspar" cooldown = 1
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 5
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 3
+"HMC Controller" cooldown = 1
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 1
+
+
+### Iteration 33   Elapsed Time 15 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 2
+"scordite" cooldown = 1
+	"z80 write 6" {"z80" --> "scordite"} cooldown = 1
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 4
+"veldspar" cooldown = 1
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 5
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 3
+"HMC Controller" cooldown = 1
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 1
+"z80 write 6" has retired at "scordite"
+Migrated "z80 read 1" from "HMC Controller" to "plagioclase"
+
+
+### Iteration 34   Elapsed Time 15 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 1
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 0
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 3
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 4
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 2
+"HMC Controller" cooldown = 0
+	Empty
+Migrated "z80 read 1" from "plagioclase" to "scordite"
+
+
+### Iteration 35   Elapsed Time 15 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 1
+"scordite" cooldown = 1
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 5
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 3
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 4
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 2
+"HMC Controller" cooldown = 0
+	Empty
+
+
+### Iteration 36   Elapsed Time 16 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 1
+	"z80 write 5" {"z80" --> "plagioclase"} cooldown = 1
+"scordite" cooldown = 1
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 5
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 3
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 4
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 2
+"HMC Controller" cooldown = 0
+	Empty
+"z80 write 5" has retired at "plagioclase"
+
+
+### Iteration 37   Elapsed Time 16 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 4
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 2
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 3
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 1
+"HMC Controller" cooldown = 0
+	Empty
+
+
+### Iteration 38   Elapsed Time 17 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 4
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 2
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 3
+"pyroxeres" cooldown = 0
+	"z80 read 4" {"z80" --> "pyroxeres"} cooldown = 1
+"HMC Controller" cooldown = 0
+	Empty
+"z80 read 4" has retired at "pyroxeres"
+
+
+### Iteration 39   Elapsed Time 17 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 3
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 1
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 2
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 0
+	Empty
+
+
+### Iteration 40   Elapsed Time 18 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 3
+"mercoxit" cooldown = 0
+	"z80 read 3" {"z80" --> "mercoxit"} cooldown = 1
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 2
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 0
+	Empty
+"z80 read 3" has retired at "mercoxit"
+
+
+### Iteration 41   Elapsed Time 18 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 2
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 1
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 0
+	Empty
+
+
+### Iteration 42   Elapsed Time 19 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 2
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	"z80 read 2" {"z80" --> "veldspar"} cooldown = 1
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 0
+	Empty
+"z80 read 2" has retired at "veldspar"
+
+
+### Iteration 43   Elapsed Time 19 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 1
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 0
+	Empty
+
+
+### Iteration 44   Elapsed Time 20 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	"z80 read 1" {"z80" --> "scordite"} cooldown = 1
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 0
+	Empty
+"z80 read 1" has retired at "scordite"
+
+
+### Iteration 45   Elapsed Time 20 ###
+"z80" cooldown = 0
+	Empty
+"plagioclase" cooldown = 0
+	Empty
+"scordite" cooldown = 0
+	Empty
+"mercoxit" cooldown = 0
+	Empty
+"veldspar" cooldown = 0
+	Empty
+"pyroxeres" cooldown = 0
+	Empty
+"HMC Controller" cooldown = 0
+	Empty

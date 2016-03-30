@@ -35,13 +35,14 @@ using namespace std;
 ///     migration_sandbox [trace_file.txt]
 int main(int argc, char** argv)
 {
-   
+	/*
     if (argc != 2)
     {
         cerr << "Error. Please specify a memory trace" << endl;
         return -1;
     }
-    
+    */
+
     // Construct components
     // These must be allocated on the heap since the system driver
     // declared later in main() will delete all of its resident components
@@ -53,6 +54,26 @@ int main(int argc, char** argv)
     memory* mercoxit = new memory(0x00030000, 0x0003FFFF, "mercoxit");
     memory* pyroxeres = new memory(0x00040000, 0x0004FFFF, "pyroxeres");
     
+	memory ** hmcModules = new memory*[5];
+	hmcModules[0] = plagioclase;
+	hmcModules[1] = scordite;
+	hmcModules[2] = veldspar;
+	hmcModules[3] = mercoxit;
+	hmcModules[4] = pyroxeres;
+
+	controller* hmcctrl = new controller
+		(
+			0,
+			0x0004FFFF,
+			"HMC Controller",
+			1,
+			10,
+			1,
+			19,
+			5,
+			64,
+			hmcModules
+		);
     // Initialize routing tables
     // These help each component move packets destined for far
     // away components to the next waypoint
@@ -60,8 +81,8 @@ int main(int argc, char** argv)
     // Each memory (named after a rock) is 64KB                             //
     // There are 5 memories ~ 320KB total                                   //
     //                                                                      //
-    //                                         0003000                      //
-    //                                         0003FFF                      //
+    //                                         00030000                      //
+    //                                         0003FFFF                      //
     //                                                                      //
     //                                         mercoxit                     //
     //                                       /          \                   //
@@ -74,18 +95,27 @@ int main(int argc, char** argv)
     //                                         00020000                     //
     //                                         0002FFFF                     //
     
-    z80->add_route(plagioclase, plagioclase); // final dest, immediate dest
-    z80->add_route(scordite, plagioclase);
-    z80->add_route(veldspar, plagioclase);
-    z80->add_route(mercoxit, plagioclase);
-    z80->add_route(pyroxeres, plagioclase);
-    
+	z80->add_route(hmcctrl, hmcctrl);
+    z80->add_route(plagioclase, hmcctrl); // final dest, immediate dest
+    z80->add_route(scordite, hmcctrl);
+    z80->add_route(veldspar, hmcctrl);
+    z80->add_route(mercoxit, hmcctrl);
+    z80->add_route(pyroxeres, hmcctrl);
+	
+	hmcctrl->add_route(plagioclase, plagioclase); // final dest, immediate dest
+	hmcctrl->add_route(scordite, plagioclase);
+	hmcctrl->add_route(veldspar, plagioclase);
+	hmcctrl->add_route(mercoxit, plagioclase);
+	hmcctrl->add_route(pyroxeres, plagioclase);
+
+	z80->add_addressable(hmcctrl);
+	/*
     z80->add_addressable(plagioclase);
     z80->add_addressable(scordite);
     z80->add_addressable(mercoxit);
     z80->add_addressable(veldspar);
     z80->add_addressable(pyroxeres);
-    
+    */
     plagioclase->add_route(z80, z80);
     plagioclase->add_route(scordite, scordite);
     plagioclase->add_route(mercoxit, scordite);
@@ -125,11 +155,16 @@ int main(int argc, char** argv)
     motherboard.add_component(mercoxit);
     motherboard.add_component(veldspar);
     motherboard.add_component(pyroxeres);
+	motherboard.add_component(hmcctrl);
     
     // Run simulation to completion using
     // the component topology established above
     motherboard.simulate();
     
+
+
+	getchar();
+
     return 0;
     
 }
