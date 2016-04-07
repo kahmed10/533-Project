@@ -27,7 +27,7 @@ memory::memory
     unsigned tRC_,
     unsigned rows_,
     unsigned columns_
-){
+){ 
     
     check(max_resident_packets > 1, "Max resident packets must be at least 1");
     this->first_address = first_address_;

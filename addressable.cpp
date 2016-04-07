@@ -13,3 +13,5 @@
 // nothing to do here really
 // addressable's only member function is declared inline in addressable.h
 
+
+addressable::addressable() {}

@@ -127,11 +127,11 @@ unsigned cpu::generate()
             // calculate the destination component containing this address
             addressable* destination = NULL;
             unsigned num_addressables = this->memory_devices.size();
-            for (unsigned ix = 0; ix < num_addressables; ix++)
+            for (unsigned idx = 0; idx < num_addressables; idx++)
             {
-                if (this->memory_devices[ix]->contains_address(address))
+                if (this->memory_devices[idx]->contains_address(address))
                 {
-                    destination = this->memory_devices[ix];
+                    destination = this->memory_devices[idx];
                     break;
                 }
             }

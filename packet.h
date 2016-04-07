@@ -57,7 +57,7 @@ class packet
             /// [in] see \ref type
             packetType type_ = INVALID,
             /// [in] see \ref address
-            unsigned address_ = 0,
+            uint64_t address_ = 0,
             /// [in] see \ref bytes_accessed
             unsigned bytes_accessed_ = 4,
             /// [in] see \ref cooldown and component class
@@ -86,7 +86,7 @@ class packet
         /// in higher indexes within packet::data use the corresponding
         /// address offsets: data[0] = address, data[1] = address + 1,
         /// data[n] = address + n...
-        unsigned address;
+        uint64_t address;
         
         /// This is the number of bytes transferred whenever this packet
         /// migrates.  Typically this is a value such as 64 when a cache line

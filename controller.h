@@ -101,7 +101,7 @@ protected:
 
 	/// Shared Mapping Table that translates the CPU's
 	/// Physical Address to the HMC's current Address mapping
-	unsigned * mapTable;
+	uint64_t * mapTable;
 
 	/// Pointers to Array of Pointers to HMC Modules in System
 	/// Used to assign Destination Component for Packets

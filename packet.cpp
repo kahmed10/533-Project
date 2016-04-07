@@ -19,7 +19,7 @@ packet::packet
     component* original_source_,
     component* final_destination_,
     packetType type_,
-    unsigned address_,
+    uint64_t address_,
     unsigned bytes_accessed_,
     unsigned cooldown_,
     const std::string& name_

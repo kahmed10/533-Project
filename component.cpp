@@ -183,8 +183,7 @@ unsigned component::port_out(unsigned packet_index)
 	if (immediate_destination == NULL) {
 		cout << "Error: No Immediate Destination for Packet " << p->name << " At Component: " << this->name << endl;
 		cout << "Press Enter to Exit" << endl;
-		getchar();
-		exit(1);
+		exit((int) getchar());
 	}
     
     unsigned new_cooldown = immediate_destination->port_in(packet_index, this);

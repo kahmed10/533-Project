@@ -19,17 +19,17 @@
 
 using namespace std;
 
-inline uint64_t pow2(unsigned exp)
+inline uint64_t pow2(uint64_t exp)
 {
 	uint64_t res = 1;
 	res <<= exp;
 	return res;
 }
 
-inline unsigned log2(unsigned x)
+inline uint64_t ulog2(uint64_t x)
 {
     // 0x1000000 on 32-bit machines
-    unsigned exp = 0;
+    uint64_t exp = 0;
     while (true)
     {
         x >>= 1;
@@ -61,7 +61,7 @@ controller::controller
 	this->initiation_interval = initiation_interval_;
 	this->max_resident_packets = max_resident_packets_;
 	this->routing_latency = routing_latency_;
-	this->cooldown = 0;
+	this->cooldown = 5;
 
 	this->address_length = address_length;
 	this->num_hmc_modules = num_hmc_modules;
@@ -69,20 +69,20 @@ controller::controller
 	this->hmcModules = hmcModules;
 
 	// Offset Bits Correspond to Page Size
-	this->offset_size = log2(page_size);
+	this->offset_size = (unsigned) ulog2((uint64_t) page_size);
 	// Index Bits 
 	this->index_size = this->address_length - this->offset_size;
 	// Table Size
-	this->table_size = last_address_ - first_address_;
-	this->table_size >>= offset_size;
+	uint64_t num_addr = last_address_ - first_address_;
+	this->table_size = (unsigned) num_addr >> offset_size;
 
 	// Create Mapping Table for Address Translation
-	printf("Creating Map Table\n Index Bits: %d Table Size: %lu\n", index_size, table_size);
-	mapTable = new unsigned[table_size];
+	//printf("Creating Map Table\n Index Bits: %d Table Size: %lu\n", index_size, table_size);
+	mapTable = new uint64_t[table_size];
 	initialize_map();
 
 	// Create Access History Table to Keep Track of Access Frequency
-	printf("Creating History Table\n Index Bits: %d Table Size: %lu\n", index_size, table_size);
+	//printf("Creating History Table\n Index Bits: %d Table Size: %lu\n", index_size, table_size);
 	hTable = new unsigned[table_size];
 	initialize_hTable();
 	
@@ -97,7 +97,7 @@ controller::~controller()
 void controller::initialize_map()
 {
 	// Default Mapping
-	for (unsigned i = 0; i < table_size; i++) {
+	for (uint64_t i = 0; i < table_size; i++) {
 		this->mapTable[i] = i;
 	}
 }
@@ -105,7 +105,7 @@ void controller::initialize_map()
 void controller::initialize_hTable()
 {
 	// Initialize Table to 0
-	for (unsigned i = 0; i < table_size; i++) {
+	for (uint64_t i = 0; i < table_size; i++) {
 		this->hTable[i] = 0;
 	}
 }
@@ -151,25 +151,25 @@ unsigned controller::port_in(unsigned packet_index, component* source)
 
 void controller::load(packet* p)
 {
-	int addr = p->address;
+	uint64_t addr = p->address;
 
 	// Check Address does not Exceed Range
 	if (addr > last_address) {
-		fprintf(stderr, "Requesting Address (0x%lx) exceeded Address Space \n", addr);
-		fprintf(stderr, "Addres Length: %d \nMaximum Address is %" PRIu64 " \n", address_length, last_address);
+		fprintf(stderr, "Requesting Address (0x%lx) exceeded Address Space \n", (unsigned long) addr);
+		fprintf(stderr, "Addres Length: %d \nMaximum Address is %lx \n", (int) address_length, (unsigned long) last_address);
 	}
 
 	// Translated Address
 	uint64_t mem_addr;
 	
 	// Retrieve Index Bits
-	unsigned idx = addr >> this->offset_size;
-	unsigned nidx = mapTable[idx];
+	uint64_t idx = addr >> this->offset_size;
+	uint64_t nidx = mapTable[idx];
 	uint64_t nidx_addr = nidx;
 	nidx_addr = nidx_addr << offset_size;
 
 	// Clear Old Index Bits
-	unsigned clr_len = 64 - offset_size;
+	uint64_t clr_len = 64 - offset_size;
 	mem_addr = addr << clr_len;
 	mem_addr = mem_addr >> clr_len;
 	
@@ -190,31 +190,31 @@ void controller::load(packet* p)
 	hTable[idx] += 1;
 
 	if (DEBUG) {
-		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
+		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", (unsigned long) addr, (unsigned long) mem_addr);
 		cout << "Packet Sent To HMC Module: " << hmc_dest->name << endl;
-		printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
+		cout << "Updated Access Table: hTable[" << idx << "] = " << hTable[idx] << endl;
 	}
 }
 
 void controller::store(packet* p)
 {
-	int addr = p->address;
+	uint64_t addr = p->address;
 	// Check Address does not Exceed Range
 	if (addr > pow2(address_length)) {
-		printf("Requesting Address (0x%lx) exceeded Address Space \n", addr);
+		printf("Requesting Address (0x%lx) exceeded Address Space \n", (unsigned long) addr);
 	}
 
 	// Translated Address
 	uint64_t mem_addr;
     
 	// Retrieve Index Bits
-	unsigned idx = addr >> this->offset_size;
-	unsigned nidx = mapTable[idx];
-	uint64_t nidx_addr = nidx;
+	unsigned idx = (unsigned) addr >> this->offset_size;
+	unsigned nidx = (unsigned) mapTable[idx];
+	unsigned nidx_addr = nidx;
 	nidx_addr = nidx_addr << offset_size;
 
 	// Clear Old Index Bits
-	unsigned clr_len = 64 - offset_size;
+	uint64_t clr_len = 64 - offset_size;
 	mem_addr = addr << clr_len;
 	mem_addr = mem_addr >> clr_len;
 
@@ -235,9 +235,9 @@ void controller::store(packet* p)
 	hTable[idx] += 1;
 
 	if (DEBUG) {
-		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", addr, mem_addr);
+		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", (unsigned long) addr, (unsigned long) mem_addr);
 		cout << "Packet Sent To HMC Module: " << hmc_dest->name << endl;
-		printf("Updated Access Table: hTable[%d] = %d \n", idx, hTable[idx]);
+		cout << "Updated Access Table: hTable[" << idx << "] = " << hTable[idx] << endl;
 	}
 	
 }
@@ -245,7 +245,7 @@ void controller::store(packet* p)
 component* controller::findDestination(uint64_t addr) {
 
 	memory* m;
-	for (int i = 0; i < num_hmc_modules; i++) {
+	for (uint64_t i = 0; i < num_hmc_modules; i++) {
 		m = hmcModules[i];
 		if (m->contains_address(addr)) {
 			return (component*) m;

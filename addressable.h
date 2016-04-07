@@ -24,6 +24,8 @@ class addressable : public component
     
     public:
         
+		addressable();
+
         /// Returns true if this memory controller has access to a given
         /// address.  In other words, returns true 
         virtual inline bool contains_address

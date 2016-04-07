@@ -8,18 +8,6 @@
 /// Target OS:              Ubuntu Linux 14.04 \n
 /// Target architecture:    x86 (64 bit) */
 
-inline unsigned log2(unsigned x)
-{
-    unsigned exp = 0;
-    while (true)
-    {
-        x >>= 1;
-        if (x == 0)
-            return exp;
-        exp++;
-    }
-}
-
 #include <iostream>
 #include "component.h"
 #include "cpu.h"
@@ -47,6 +35,7 @@ int main(int argc, char** argv)
     // These must be allocated on the heap since the system driver
     // declared later in main() will delete all of its resident components
     // upon destruction
+
     cpu* z80 = new cpu("trace_simple.txt", "z80");
     memory* plagioclase = new memory(0x00000000, 0x0000FFFF, "plagioclase");
     memory* scordite = new memory(0x00010000, 0x0001FFFF, "scordite");
@@ -63,7 +52,7 @@ int main(int argc, char** argv)
 
 	controller* hmcctrl = new controller
 		(
-			0,
+			0x0,
 			0x0004FFFF,
 			"HMC Controller",
 			1,
@@ -162,10 +151,8 @@ int main(int argc, char** argv)
     motherboard.simulate();
     
 
-
-	getchar();
-
-    return 0;
+	int ret = getchar();
+    return (ret);
     
 }
 
