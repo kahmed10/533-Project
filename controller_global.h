@@ -2,7 +2,7 @@
 /// Project:                Migration Sandbox \n
 /// File Name:              controller.h \n
 /// Required Libraries:     none \n
-/// Date created:           April 22 2016 \n
+/// Date created:           May 3 2016 \n
 /// Engineers:              Dong Kai Wang \n
 /// Compiler:               g++ \n
 /// Target OS:              Scientific Linux 7.1 \n
@@ -105,11 +105,12 @@ protected:
 	void store(packet* p);
 
 	/// Determine Destination HMC Module from Address
-	component* findDestination(uint64_t addr);
+	component * findDestination(uint64_t addr);
 
 	/// Shared Mapping Table that translates the CPU's
 	/// Physical Address to the HMC's current Address mapping
 	uint64_t * mapTable;
+	uint64_t mapTable_size;
 
 	/// Decentralized History Table located at each module
 	/// that keeps track of Accesses from different CPUs
