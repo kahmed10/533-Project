@@ -150,6 +150,8 @@ unsigned cpu::generate()
             (
                 this,           // original source
                 destination,    // memory containing requested data word
+				NULL,
+				0,
                 rw == 'R' ? READ_REQ : WRITE_REQ,
                 address,
                 4,  // bytes accessed

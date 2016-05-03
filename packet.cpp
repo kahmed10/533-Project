@@ -18,6 +18,8 @@ packet::packet
 (
     component* original_source_,
     component* final_destination_,
+	component* swap_destination_,
+	unsigned swap_tag_,
     packetType type_,
     uint64_t address_,
     unsigned bytes_accessed_,
@@ -27,6 +29,8 @@ packet::packet
     
     this->original_source = original_source_;
     this->final_destination = final_destination_;
+	this->swap_destination = swap_destination_;
+	this->swap_tag = swap_tag_;
     this->type = type_;
     this->name = name_;
     this->address = address_;
