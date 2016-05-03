@@ -1,13 +1,13 @@
-/** \file
- *  Project:                Migration Sandbox \n
- *  File Name:              packet.h \n
- *  Date created:           Wed Feb 17 2017 \n
+/// \file
+/// Project:                Migration Sandbox \n
+/// File Name:              packet.h \n
+/// Date created:           Wed Feb 17 2017 \n
 /// Engineers:              Khalique Ahmed
 ///                         Conor Gardner
 ///                         Dong Kai Wang\n
- *  Compiler:               g++ \n
- *  Target OS:              Ubuntu Linux 14.04 and Windows \n
- *  Target architecture:    x86 64-bit \n */
+/// Compiler:               g++ \n
+/// Target OS:              Ubuntu Linux 14.04 and Windows \n
+/// Target architecture:    x86 64-bit \n */
  
 #ifndef __HEADER_GUARD_PACKET__
 #define __HEADER_GUARD_PACKET__
@@ -38,7 +38,11 @@ typedef enum
     /// Packet is delivering data which should be written to simulated
     /// memory.  packet::final_destination, packet::address, and
     /// packet::data must be valid.
-    WRITE_REQ
+    WRITE_REQ,
+
+	SWAP_REQ,
+
+	SWAP_ACK
     
 } packetType;
 
@@ -54,6 +58,9 @@ class packet
             component* original_source_,
             /// [in] see \ref final_destination
             component* final_destination_,
+
+			component* swap_destination_,
+			unsigned swap_tag_,
             /// [in] see \ref type
             packetType type_ = INVALID,
             /// [in] see \ref address
