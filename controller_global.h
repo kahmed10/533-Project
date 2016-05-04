@@ -17,6 +17,8 @@
 #include "memory.h"
 #include "cpu.h"
 
+using namespace std;
+
 /// \class controller_global
 ///
 ///                        CPU Physical Memory Address
@@ -31,6 +33,11 @@
 ///  |-----------|------------------------|--------------------------------------|
 ///  New Module ID  New Internal Page ID                   Offset
 ///
+
+struct lockedPage {
+	uint64_t page_idx;
+	unsigned tag;
+};
 
 class controller_global : public addressable
 {
@@ -118,10 +125,17 @@ protected:
 	/// Initiate a Store Operation (Called by Port_In)
 	void store(packet* p);
 
+	/// Increment History Counters
 	void update_History(cpu* cpuSource, unsigned address);
 
-	/// Determine Destination HMC Module from Address
-	component * find_Destination(uint64_t addr);
+	/// Select Candidates for Migration
+	vector<uint64_t> select_Candidates();
+
+	/// Perform a Migration
+	void migrate(vector<uint64_t> candidates);
+
+	/// Determine Destination Memory Module from Address
+	memory * find_Destination(uint64_t addr);
 
 	/// Helper functions that return Internal Indices
 	unsigned getIndexMEM(memory* module);
@@ -150,6 +164,10 @@ protected:
 
 	/// 2D Array of Distances from each CPU to each Memory Module
 	unsigned ** distanceTable;
+
+	/// Active Migration List
+	vector<lockedPage> locked_Pages;
+	unsigned tag_count;
 
 	/// Number of (Physical) Address, Index, and Offset bits
 	unsigned address_length;

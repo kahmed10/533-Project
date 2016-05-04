@@ -159,6 +159,13 @@ class component
         /// print() is called
         std::string name;
         
+		/// Pointers to all packets resident on a component are stored here.
+		/// No component shall contain a pointer to a packet which is resident
+		/// on anther component (mostly to avoid double-deletes).  Packets
+		/// can only be moved through calls to port_in() and
+		/// port_out()
+		std::vector<packet*> resident_packets;
+
     protected:
         
         /// After a component sucessfully accepts a packet through a call
@@ -199,13 +206,6 @@ class component
         /// component can accept another packet.  It is decreased after
         /// calls to advance_cooldowns().
         unsigned cooldown;
-        
-        /// Pointers to all packets resident on a component are stored here.
-        /// No component shall contain a pointer to a packet which is resident
-        /// on anther component (mostly to avoid double-deletes).  Packets
-        /// can only be moved through calls to port_in() and
-        /// port_out()
-        std::vector<packet*> resident_packets;
         
         /// Some packets may arrive at this component but only passing
         /// through and need the be routed to the next component along the 

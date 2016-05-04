@@ -193,6 +193,23 @@ unsigned controller_global::port_in(unsigned packet_index, component* source)
 	if (this->cooldown > 0)
 		return this->cooldown;
 
+	// Allow SWAP_ACK to bypass Capacity Restrictions
+	if (source->resident_packets[packet_index]->type == SWAP_ACK) {
+		packet* ack = source->resident_packets[packet_index];
+		int idx = move_packet(packet_index, source, this);
+
+		// Free Locked Pages
+		for (int i = 0; i < locked_Pages.size(); i++) {
+			if (locked_Pages[i].tag == ack->swap_tag) {
+				locked_Pages.erase(locked_Pages.begin() + i);
+				i = i - 1;
+			}
+		}
+
+		destroy_packet(idx);
+		return UINT_MAX;
+	}
+
 	// make sure this component is not at its maximum packet capacity
 	if (this->resident_packets.size() >= this->max_resident_packets)
 		return this->min_packet_cooldown();
@@ -227,8 +244,125 @@ unsigned controller_global::port_in(unsigned packet_index, component* source)
 
 unsigned controller_global::generate()
 {
+	// Check for the End of Epoch
+	if (cycle >= epoch_length) {
+		// Select Candidates for Migration
+		vector<uint64_t> candidates;
+		candidates = select_Candidates();
+		migrate(candidates);
 
-	return 0;
+		// Clear History
+		for (uint64_t i = 0; i < mapTable_size; i++) {
+			hTable[i] = new unsigned[num_cpu];
+			for (int j = 0; j < num_cpu; j++) {
+				hTable[i][j] = 0;
+			}
+		}
+
+		if (candidates.size() > 0) return 0;
+	}
+
+	return UINT_MAX;
+}
+
+void controller_global::migrate(vector<uint64_t> candidates)
+{
+	if (candidates.size() > 0) {
+		for (int i = 0; i < candidates.size(); i++) {
+
+			unsigned page = candidates[i];
+			unsigned ideal_cpu;
+			unsigned ideal_mem;
+
+			// Find CPU with most Accesses
+			unsigned cur_max = 0;
+			for (int cpu_idx = 0; cpu_idx < num_cpu; cpu_idx++) {
+				if (hTable[page][cpu_idx] > cur_max) {
+					cur_max = hTable[page][cpu_idx];
+					ideal_cpu = cpu_idx;
+				}
+			}
+
+			// Find Memory Module closest to that CPU
+			unsigned cur_min = UINT_MAX;
+			for (int mem_idx = 0; mem_idx < num_mem; mem_idx++) {
+				if (distanceTable[ideal_cpu][mem_idx] < cur_min) {
+					cur_min = distanceTable[ideal_cpu][mem_idx];
+					ideal_mem = mem_idx;
+				}
+			}
+
+			memory* swapModule_A = find_Destination(page << offset_length);
+			memory* swapModule_B = memModules[ideal_mem];
+
+			tag_count++;
+			unsigned tag = tag_count;
+
+			// Add Packets to Controller
+			packet* migrate_A = new packet
+			(
+				this, // Original source
+				swapModule_A, // Migration Source
+				swapModule_B, // Migration Destination
+				tag,  // Tag
+				SWAP_REQ,
+				0,  // Address
+				4,  // bytes accessed
+				0,  // cooldown
+				"Migrate " + swapModule_A->name + " -> " + swapModule_B->name // name
+			);
+			packet* migrate_B = new packet
+			(
+				this, // Original source
+				swapModule_B, // Migration Source
+				swapModule_A, // Migration Destination
+				tag,  // Tag
+				SWAP_REQ,
+				0,  // Address
+				4,  // bytes accessed
+				0,  // cooldown
+				"Migrate " + swapModule_B->name + " -> " + swapModule_A->name // name
+			);
+			this->resident_packets.push_back(migrate_A);
+			this->resident_packets.push_back(migrate_B);
+
+			// Swap the two indices in MapTable
+			unsigned old_index;
+			unsigned new_index;
+
+			unsigned old_module_ID = page >> internal_index_length;
+			unsigned new_module_ID = memModules[ideal_mem]->get_first_address() >> internal_address_length;
+
+			new_index = new_module_ID << internal_index_length;
+			unsigned mask = pow2(internal_index_length) - 1;
+			unsigned new_internal_idx = page & mask;
+
+			old_index = page;
+			new_index = new_index | new_internal_idx;
+
+			unsigned old_Value = mapTable[old_index];
+			unsigned new_Value = mapTable[new_index];
+
+			mapTable[old_index] = new_Value;
+			mapTable[new_index] = old_Value;
+
+			// Add Migration Pages to Locked Page List
+			lockedPage page_A, page_B;
+			page_A.page_idx = old_index;
+			page_A.tag = tag;
+			page_B.page_idx = new_index;
+			page_B.tag = tag;
+
+			locked_Pages.push_back(page_A);
+			locked_Pages.push_back(page_B);
+
+			if (DEBUG) {
+				cout << " \n Performed Migration: " << endl;
+				cout << " mapTable[" << old_index << "] = " << new_Value << endl;
+				cout << " mapTable[" << new_index << "] = " << old_Value << endl;
+			}
+		}
+	}
 }
 
 void controller_global::load(packet* p)
@@ -260,7 +394,7 @@ void controller_global::load(packet* p)
 
 	// Determine Destination Component
 	component* hmc_dest;
-	hmc_dest = find_Destination(mem_addr);
+	hmc_dest = (component*) find_Destination(mem_addr);
 
 	// Modify Read Packet
 	string packetName = "R" + std::to_string(addr);
@@ -305,7 +439,7 @@ void controller_global::store(packet* p)
 
 	// Determine Destination Component
 	component* hmc_dest;
-	hmc_dest = find_Destination(mem_addr);
+	hmc_dest = (component*) find_Destination(mem_addr);
 
 	// Modify Write Packet
 	string packetName = "W" + std::to_string(addr);
@@ -335,13 +469,46 @@ void controller_global::update_History(cpu * cpuSource, unsigned address)
 
 }
 
-component* controller_global::find_Destination(uint64_t addr) {
+vector<uint64_t> controller_global::select_Candidates()
+{
+
+	// List of Candidates for Migration
+	vector<uint64_t> candidate_Indices;
+
+	// Check History Table for Hot Pages
+	for (unsigned page_idx = 0; page_idx < mapTable_size; page_idx++) {
+		
+		unsigned total_access = 0;
+		unsigned total_cost = 0;
+
+		for (unsigned cpu_idx = 0; cpu_idx < num_cpu; cpu_idx++) {
+			
+			unsigned addr = page_idx << offset_length;
+			memory* mem_module = find_Destination(addr);
+			unsigned mem_idx = getIndexMEM(mem_module);
+
+			total_cost += (hTable[page_idx][cpu_idx] * distanceTable[cpu_idx][mem_idx]);
+			total_access += hTable[page_idx][cpu_idx];
+		}
+
+		// Evaluate Costs and Uniformity of Accesses
+		if (total_cost > cost_threshold) {
+			// Needs to improve
+			if (candidate_Indices.size() <= 4)
+				candidate_Indices.push_back(page_idx);
+		}
+	}
+
+	return candidate_Indices;
+}
+
+memory* controller_global::find_Destination(uint64_t addr) {
 
 	memory* m;
 	for (uint64_t i = 0; i < num_mem; i++) {
 		m = memModules[i];
 		if (m->contains_address(addr)) {
-			return (component*)m;
+			return m;
 		}
 	}
 	cout << "Address " << addr << " out of Range" << endl;
