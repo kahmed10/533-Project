@@ -56,11 +56,9 @@ controller_global::controller_global
 
 	// -- CPU Configuration
 	unsigned num_cpu_,
-	unsigned *** distanceTable_,
 
 	// -- Memory Configuration
 	unsigned num_mem_,
-	memory ** memModules_,
 	unsigned address_length_,
 	unsigned internal_address_length_,
 	unsigned page_size_,
@@ -78,10 +76,8 @@ controller_global::controller_global
 	this->last_address = last_address_;
 
 	this->num_cpu = num_cpu_;
-	this->distanceTable = distanceTable_;
 
 	this->num_mem = num_mem_;
-	this->memModules = memModules_;
 	this->address_length = address_length_;
 	this->internal_address_length = internal_address_length;
 	this->num_mem = num_mem;
@@ -104,9 +100,17 @@ controller_global::controller_global
 
 controller_global::~controller_global()
 {
+	delete[] memModules;
+	delete[] sourceCPUs;
+
+	for (int i = 0; i < num_cpu; i++) {
+		delete[] distanceTable[i];
+	}
+	delete[] distanceTable;
+
 	delete[] mapTable;
 	for (uint64_t i = 0; i < mapTable_size; i++) {
-		delete hTable[i];
+		delete[] hTable[i];
 	}
 	delete[] hTable;
 }
@@ -114,6 +118,24 @@ controller_global::~controller_global()
 void controller_global::initialize()
 {
 
+	// Create Table of Memory Pointers
+	numActiveModules = 0;
+	memModules = new memory*[num_mem];
+
+	// Create Table of CPU Pointers
+	numActiveCPUs = 0;
+	sourceCPUs = new cpu*[num_cpu];
+
+	// Create Table for Distances
+	distanceTable = new unsigned*[num_cpu];
+	for (int i = 0; i < num_cpu; i++) {
+		distanceTable[i] = new unsigned[num_mem];
+		for (int j = 0; j < num_mem; i++) {
+			distanceTable[i][j] = 0;
+		}
+	}
+
+	// Create Table for Mapping and History Tracking
 	mapTable = new uint64_t[mapTable_size];
 	hTable = new unsigned*[mapTable_size];
 
@@ -126,6 +148,41 @@ void controller_global::initialize()
 		}
 	}
 
+}
+
+void controller_global::add_Module(memory* module) {
+
+	if (numActiveModules >= num_mem) {
+		cerr << "Attempted to add more memory modules than declared in controller" << endl;
+		abort();
+	}
+
+	memModules[numActiveModules] = module;
+	numActiveModules++;
+}
+
+void controller_global::add_Cpu(cpu* sourceCPU)
+{
+
+	if (numActiveCPUs >= num_cpu) {
+		cerr << "Attempted to add more CPUs than declared in controller" << endl;
+		abort();
+	}
+
+	sourceCPUs[numActiveCPUs] = sourceCPU;
+	numActiveCPUs++;
+}
+
+void controller_global::add_Distance(cpu * cpu_source, memory * module, unsigned distance) {
+
+	// Check that All CPUs and Memory have been Added
+	assert(numActiveCPUs == num_cpu - 1);
+	assert(numActiveModules == num_mem - 1);
+
+	int cpu_idx = getIndexCPU(cpu_source);
+	int mem_idx = getIndexMEM(module);
+
+	distanceTable[cpu_idx][mem_idx] = distance;
 
 }
 
@@ -168,6 +225,12 @@ unsigned controller_global::port_in(unsigned packet_index, component* source)
 	return UINT_MAX;
 }
 
+unsigned controller_global::generate()
+{
+
+	return 0;
+}
+
 void controller_global::load(packet* p)
 {
 	uint64_t addr = p->address;
@@ -197,7 +260,7 @@ void controller_global::load(packet* p)
 
 	// Determine Destination Component
 	component* hmc_dest;
-	hmc_dest = findDestination(mem_addr);
+	hmc_dest = find_Destination(mem_addr);
 
 	// Modify Read Packet
 	string packetName = "R" + std::to_string(addr);
@@ -206,7 +269,7 @@ void controller_global::load(packet* p)
 	p->final_destination = hmc_dest;
 
 	// Update History Table
-	hTable[nidx] += 1;
+	update_History((cpu*) p->original_source, mem_addr);
 
 	if (DEBUG) {
 		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", (unsigned long)addr, (unsigned long)mem_addr);
@@ -244,7 +307,7 @@ void controller_global::store(packet* p)
 
 	// Determine Destination Component
 	component* hmc_dest;
-	hmc_dest = findDestination(mem_addr);
+	hmc_dest = find_Destination(mem_addr);
 
 	// Modify Write Packet
 	string packetName = "W" + std::to_string(addr);
@@ -253,7 +316,7 @@ void controller_global::store(packet* p)
 	p->final_destination = hmc_dest;
 
 	// Update History Table
-	hTable[nidx] += 1;
+	update_History((cpu*)p->original_source, mem_addr);
 
 	if (DEBUG) {
 		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", (unsigned long)addr, (unsigned long)mem_addr);
@@ -263,7 +326,16 @@ void controller_global::store(packet* p)
 
 }
 
-component* controller_global::findDestination(uint64_t addr) {
+void controller_global::update_History(cpu * cpuSource, unsigned address)
+{
+
+	unsigned page_index = address >> offset_length;
+	unsigned cpu_index = getIndexCPU(cpuSource);
+	hTable[page_index][cpu_index]++;
+
+}
+
+component* controller_global::find_Destination(uint64_t addr) {
 
 	memory* m;
 	for (uint64_t i = 0; i < num_mem; i++) {
@@ -273,6 +345,28 @@ component* controller_global::findDestination(uint64_t addr) {
 		}
 	}
 	cout << "Address " << addr << " out of Range" << endl;
+}
+
+unsigned controller_global::getIndexMEM(memory * module)
+{
+	
+	for (int i = 0; i < num_mem; i++) {
+		if (memModules[i] == module)
+			return i;
+	}
+	
+	cerr << "Memory Module Not Found in Controller" << endl;
+}
+
+unsigned controller_global::getIndexCPU(cpu * sourceCPU)
+{
+	
+	for (int i = 0; i < num_cpu; i++) {
+		if (sourceCPUs[i] == sourceCPU)
+			return i;
+	}
+
+	cerr << "CPU Not Found in Controller" << endl;
 }
 
 unsigned controller_global::advance_cooldowns(unsigned time)

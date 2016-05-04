@@ -15,6 +15,7 @@
 #include <vector>
 #include "addressable.h"
 #include "memory.h"
+#include "cpu.h"
 
 /// \class controller_global
 ///
@@ -63,14 +64,10 @@ public:
 		// -- CPU Configuration
 		/// Number of CPUs
 		unsigned num_cpu_ = 1,
-		/// 2D Distance Table from each CPU to each HMC Module
-		unsigned *** distanceTable_ = NULL,
 
 		// -- Memory Configuration
 		/// Number of HMC Modules
 		unsigned num_mem_ = 4,
-		/// Pointers to Table of HMC Module Components
-		memory ** memModules_ = NULL,
 		/// Address Length in Bits, Assuming Byte Addressable Memory
 		unsigned address_length_ = 32,
 		/// Internal Memory Address Bits (log(Memory Size))
@@ -84,13 +81,30 @@ public:
 	);
 
 	/// Delete Dynamic Memory
-	~controller_global();	
+	~controller_global();
+
+	/// Add a Memory Module
+	void add_Module(memory* module);
+
+	/// Add a Source CPU
+	void add_Cpu(cpu* sourceCPU);
+
+	/// Add a Distance Entry: [cpu][mem_module] 
+	/// Only call this function after you have added all CPU and Memory Modules
+	void add_Distance(cpu* source_cpu, memory* module, unsigned distance);
 
 	/// See component::port_in
 	unsigned port_in(unsigned packet_index, component * source);
 
 	/// See component::advance_cooldowns
 	unsigned advance_cooldowns(unsigned time);
+
+	/// Read some of the trace_file and generate read / write packets
+	/// from the trace.  This function will fill any available spaces
+	/// in the resident_packets vector but try to leave at least 3 spaces
+	/// available (therefore it is recomended to initialize
+	/// max_resident_packets to at least 4 at construction).
+	unsigned generate();
 
 protected:
 
@@ -104,11 +118,29 @@ protected:
 	/// Initiate a Store Operation (Called by Port_In)
 	void store(packet* p);
 
+	void update_History(cpu* cpuSource, unsigned address);
+
 	/// Determine Destination HMC Module from Address
-	component * findDestination(uint64_t addr);
+	component * find_Destination(uint64_t addr);
+
+	/// Helper functions that return Internal Indices
+	unsigned getIndexMEM(memory* module);
+	unsigned getIndexCPU(cpu* sourceCPU);
+
+	/// Internal Array of Pointers to Source CPUs that issue
+	/// load and store requests
+	unsigned num_cpu;
+	cpu ** sourceCPUs;
+	unsigned numActiveCPUs;
+
+	/// Internal Array of Pointers to HMC Modules in System
+	/// Used to assign Destination Component for Packets
+	unsigned num_mem;
+	memory ** memModules;
+	unsigned numActiveModules;
 
 	/// Shared Mapping Table that translates the CPU's
-	/// Physical Address to the HMC's current Address mapping
+	/// Physical Address to the controller's current Address mapping
 	uint64_t * mapTable;
 	uint64_t mapTable_size;
 
@@ -116,9 +148,8 @@ protected:
 	/// that keeps track of Accesses from different CPUs
 	unsigned ** hTable;
 
-	/// Number of CPUs and Memory Modules
-	unsigned num_cpu;
-	unsigned num_mem;
+	/// 2D Array of Distances from each CPU to each Memory Module
+	unsigned ** distanceTable;
 
 	/// Number of (Physical) Address, Index, and Offset bits
 	unsigned address_length;
@@ -139,12 +170,6 @@ protected:
 	/// Local Clock
 	uint64_t cycle = 0;
 
-	/// Pointers to Array of Pointers to HMC Modules in System
-	/// Used to assign Destination Component for Packets
-	memory ** memModules;
-
-	/// Pointer to 2D Array of Distance Table
-	unsigned *** distanceTable;
 };
 
 #endif // header guard
