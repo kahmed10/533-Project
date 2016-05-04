@@ -65,11 +65,10 @@ unsigned memory::retire(unsigned packet_index)
     check
     (
         // check if the *last* byte to read within the memory
-        p->address >= this->memory_size,
+        this->contains_address(p->address),
         "Tried to access memory address beyond this memory's address space"
     );
     
-            
     static const std::string swap_basename("Swap ");
     
 
