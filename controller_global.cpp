@@ -79,11 +79,11 @@ controller_global::controller_global
 
 	this->num_mem = num_mem_;
 	this->address_length = address_length_;
-	this->internal_address_length = internal_address_length;
-	this->num_mem = num_mem;
-	this->page_size = page_size;
-	this->epoch_length = epoch_length;
-	this->cost_threshold = cost_threshold;
+	this->internal_address_length = internal_address_length_;
+	this->num_mem = num_mem_;
+	this->page_size = page_size_;
+	this->epoch_length = epoch_length_;
+	this->cost_threshold = cost_threshold_;
 
 	// Assign Index and Offset Bits
 	this->offset_length = (unsigned)ulog2((uint64_t)page_size);
@@ -92,7 +92,7 @@ controller_global::controller_global
 
 	// Table Size
 	uint64_t num_addr = last_address_ - first_address_;
-	this->mapTable_size = (unsigned)num_addr >> offset_length;
+	this->mapTable_size = num_addr >> offset_length;
 
 	// Initialize Tables
 	initialize();
@@ -130,7 +130,7 @@ void controller_global::initialize()
 	distanceTable = new unsigned*[num_cpu];
 	for (int i = 0; i < num_cpu; i++) {
 		distanceTable[i] = new unsigned[num_mem];
-		for (int j = 0; j < num_mem; i++) {
+		for (int j = 0; j < num_mem; j++) {
 			distanceTable[i][j] = 0;
 		}
 	}
@@ -176,8 +176,8 @@ void controller_global::add_Cpu(cpu* sourceCPU)
 void controller_global::add_Distance(cpu * cpu_source, memory * module, unsigned distance) {
 
 	// Check that All CPUs and Memory have been Added
-	assert(numActiveCPUs == num_cpu - 1);
-	assert(numActiveModules == num_mem - 1);
+	assert(numActiveCPUs == num_cpu);
+	assert(numActiveModules == num_mem);
 
 	int cpu_idx = getIndexCPU(cpu_source);
 	int mem_idx = getIndexMEM(module);
@@ -268,15 +268,13 @@ void controller_global::load(packet* p)
 	p->address = mem_addr;
 	p->final_destination = hmc_dest;
 
-	// Update History Table
-	update_History((cpu*) p->original_source, mem_addr);
-
 	if (DEBUG) {
 		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", (unsigned long)addr, (unsigned long)mem_addr);
 		cout << "Packet Sent To HMC Module: " << hmc_dest->name << endl;
-		cout << "Updated Access Table: hTable[" << idx << "] = " << hTable[idx] << endl;
 	}
 
+	// Update History Table
+	update_History((cpu*) p->original_source, mem_addr);
 
 }
 
@@ -315,14 +313,13 @@ void controller_global::store(packet* p)
 	p->address = mem_addr;
 	p->final_destination = hmc_dest;
 
-	// Update History Table
-	update_History((cpu*)p->original_source, mem_addr);
-
 	if (DEBUG) {
 		printf("Load Packet - Original Address: %lx Translated Address: %lx \n", (unsigned long)addr, (unsigned long)mem_addr);
 		cout << "Packet Sent To HMC Module: " << hmc_dest->name << endl;
-		cout << "Updated Access Table: hTable[" << idx << "] = " << hTable[idx] << endl;
 	}
+
+	// Update History Table
+	update_History((cpu*)p->original_source, mem_addr);
 
 }
 
@@ -332,6 +329,9 @@ void controller_global::update_History(cpu * cpuSource, unsigned address)
 	unsigned page_index = address >> offset_length;
 	unsigned cpu_index = getIndexCPU(cpuSource);
 	hTable[page_index][cpu_index]++;
+	if (DEBUG) {
+		cout << "Updated hTable [" << page_index << "][" << cpu_index << "] = " << hTable[page_index][cpu_index] << endl;
+	}
 
 }
 
@@ -345,28 +345,31 @@ component* controller_global::find_Destination(uint64_t addr) {
 		}
 	}
 	cout << "Address " << addr << " out of Range" << endl;
+	return NULL;
 }
 
 unsigned controller_global::getIndexMEM(memory * module)
 {
 	
-	for (int i = 0; i < num_mem; i++) {
+	for (unsigned i = 0; i < num_mem; i++) {
 		if (memModules[i] == module)
 			return i;
 	}
 	
 	cerr << "Memory Module Not Found in Controller" << endl;
+	return 0;
 }
 
 unsigned controller_global::getIndexCPU(cpu * sourceCPU)
 {
 	
-	for (int i = 0; i < num_cpu; i++) {
+	for (unsigned i = 0; i < num_cpu; i++) {
 		if (sourceCPUs[i] == sourceCPU)
 			return i;
 	}
 
 	cerr << "CPU Not Found in Controller" << endl;
+	return 0;
 }
 
 unsigned controller_global::advance_cooldowns(unsigned time)
