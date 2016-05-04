@@ -38,7 +38,7 @@ class controller : public addressable
 {
 
 public:
-
+    
 	controller
 	(
 		/// [in] The first CPU-physical address that this memory controller
@@ -49,8 +49,19 @@ public:
 		/// has access to.  This address does not change when migrations
 		/// occur.
 		uint64_t last_address,
+		/// Number of HMC Memory Modules TODO - make this comment better
+		/// by telling us how the number of hmc modules affects address
+		/// mappings
+		unsigned num_hmc_modules,
+		/// [in] Externally allocated array containing pointers to all
+		/// of the memories addressable by the controller.  This array
+		/// is NOT deleted by the controller.
+		memory ** hmcModules = NULL
 	    /// [in] See component::name
 		const std::string& name_ = "Universal HMC Controller",
+		/// [in] The minimum number of contiguous bytes that are tracked for
+		/// migration
+		unsigned page_size = 4096,
 		/// [in] See component::initiation_interval
 		unsigned initiation_interval_ = 0,
 		/// [in] See component::max_resident_packets
@@ -58,15 +69,7 @@ public:
 		/// [in] See component::routing_latency
 		unsigned routing_latency_ = 0,
 		/// Address Length in Bits, Assuming Byte Addressable Memory
-		unsigned address_length = 40,
-		/// Number of HMC Memory Modules TODO - make this comment better
-		/// by telling us how the number of hmc modules affects address
-		/// mappings
-		unsigned num_hmc_modules = 16,
-		/// Migration Page Size in Bytes
-		unsigned page_size = 64,
-		/// Pointers to Table of HMC Module Components
-		memory ** hmcModules = NULL
+		uint64_t address_length = 32,
 	);
 	
 	/// Frees mapTable Array
@@ -74,13 +77,13 @@ public:
     
 	/// Initiate a Load Operation
 	void load(packet* p);
-
+    
 	/// Initiate a Store Operation
 	void store(packet* p);
-
+    
 	/// Inherit Port In
 	unsigned port_in(unsigned packet_index, component * source);
-
+    
 protected:
 
 	/// Initialize Memory Mapping, By Default, The Physical and
@@ -124,3 +127,4 @@ protected:
 };
 
 #endif // header guard
+

@@ -40,11 +40,16 @@ typedef enum
     /// packet::data must be valid.
     WRITE_REQ,
 
-	/// Swap Request (Migration)
-	SWAP_REQ,
-
-	/// Swap Acknowledge
-	SWAP_ACK
+    /// Swap Request (Migration) sent from the controller to a memory
+    SWAP_REQ,
+    
+    /// Sent from one HMC to another.  This contains the data sent for a swap
+    /// operation.
+    SWAP_XFER, 
+    
+    /// Swap Acknowledge sent from the memory to the controller when
+    /// a swap is complete
+    SWAP_ACK
     
 } packetType;
 
@@ -60,10 +65,10 @@ class packet
             component* original_source_,
             /// [in] see \ref final_destination
             component* final_destination_,
-			/// [in] Swap Destination
-			component* swap_destination_,
-			/// [in] Swap Request Tag, Memory modules must Acknowledge with the same Tag
-			unsigned swap_tag_,
+            /// [in] Swap Destination
+            component* swap_destination_,
+            /// [in] Swap Request Tag, Memory modules must Acknowledge with the same Tag
+            unsigned swap_tag_,
             /// [in] see \ref type
             packetType type_ = INVALID,
             /// [in] see \ref address
@@ -82,11 +87,11 @@ class packet
         /// The component which this packet should be routed to
         component* final_destination;
         
-		/// Swap Destination
-		component* swap_destination;
+        /// Swap Destination
+        component* swap_destination;
 
-		/// Swap Tag
-		unsigned swap_tag;
+        /// Swap Tag
+        unsigned swap_tag;
 
         /// Distinguishes between read requests, read responses,
         /// write requests, etc
@@ -95,6 +100,9 @@ class packet
         /// A human readable name which is displayed upon calls to
         /// component::print()
         std::string name;
+        
+        /// The number of bytes associated with this memory transfer.
+        unsigned packet_size;
         
         /// If this packet is a memory operation such as a read/write request
         /// then this is the address of the first byte to be read/written.
@@ -117,3 +125,4 @@ class packet
 };
 
 #endif // header guard
+

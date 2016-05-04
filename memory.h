@@ -41,7 +41,7 @@ class memory : public addressable
             /// [in] See component::max_resident_packets
             unsigned max_resident_packets_ = 8,
             /// [in] See component::routing_latency
-            unsigned routing_latency_ = 0,
+            unsigned routing_latency_ = 1,
             /// [in] Cooldown that elapses for reading or writing a location
             /// within the current row (row buffer hit).
             unsigned tCL = 5,
@@ -54,7 +54,12 @@ class memory : public addressable
             unsigned rows_ = 32768,
             /// [in] Default is a reasonable value for a 512 Megabyte DDR3
             /// stick with 8 banks.
-            unsigned columns_ = 2048
+            unsigned columns_ = 2048,
+            /// [in] The number of bytes within a single location on the
+            /// (column, row) grid.  Default is a reasonable value for a
+            /// 512 MB DDR3 stick with 8 banks (wordsize is equal to the
+            /// number of banks in this case).
+            unsigned word_size = 8
         );
         
         /// Just to override the pure virtual destructor
@@ -84,6 +89,11 @@ class memory : public addressable
         /// you access data within the same row multiple times.
         unsigned rows;
         
+        /// The number of bytes at a single [column, row] location of a DRAM.
+        /// This is the number of bytes accessed in a single clocik cycle
+        /// from the memory (we are not considering burst transfers here).
+        unsigned word_size;
+        
         /// Ranges from 0 to memory::rows - 1.  Indicates which row is
         /// currently in the. simulated row buffer and therefore is fast
         /// to access. This is initialized to UINT_MAX upon construction to
@@ -96,16 +106,14 @@ class memory : public addressable
         /// elapse when accessing an address outside the current row.
         unsigned tRC;
         
-        /// Storage for the simulated memory which is read/written.
-        /// memory::data.size() = memory::rows * memory::columns.
-        /// memory::data[5] = row 0 column 5 when memory::columns >= 6.
-        std::vector<uint8_t> data;
+        /// Number of bytes in this memory
+        uint64_t memory_size;
         
         /// \return true if address lies within the row currently in the
         /// row buffer (row buffer hit). \n
         /// false if another row must be precharged/activated and brought
         /// into the row buffer incurring extra cooldown time.
-        bool row_buffer_hit(unsigned address);
+        bool row_buffer_hit(uint64_t address);
         
 };
 

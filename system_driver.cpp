@@ -54,8 +54,10 @@ unsigned long system_driver::simulate()
             << std::endl << std::endl
             << "### Iteration "
             << iteration
-            << "   Elapsed Time "
+            << " | Elapsed Time "
             << elapsed_ticks
+            << " | Advancement Amount "
+            << advancement_amount
             << " ###"
             << std::endl;
         iteration++;

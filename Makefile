@@ -11,7 +11,7 @@ ARGS=trace.txt
 all: documentation $(EXENAME)
 
 # add additional .o files on the line below (after main.o)
-$(EXENAME): addressable.o component.o controller.o cpu.o main.o memory.o packet.o system_driver.o
+$(EXENAME): addressable.o component.o controller_global.o cpu.o diamond.o main.o memory.o packet.o system_driver.o
 	$(COMPILER) $(LINKFLAGS) -o $(EXENAME) $^ $(LIBS)
 	@echo "*** COMPILE_SUCCESSFUL ***"
 
@@ -25,13 +25,16 @@ addressable.o: addressable.cpp addressable.h component.h
 component.o: component.cpp component.h debug.h packet.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
-controller.o: controller.cpp addressable.h component.h controller.h debug.h packet.h
+controller_global.o: controller_global.cpp addressable.h component.h controller_global.h debug.h packet.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
 cpu.o: cpu.cpp addressable.h cpu.h debug.h packet.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
-main.o: main.cpp addressable.h component.h controller.h cpu.h memory.h packet.h system_driver.h
+diamond.o: diamond.cpp
+	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
+
+main.o: main.cpp addressable.h component.h controller_global.h cpu.h memory.h packet.h system_driver.h
 	$(COMPILER) $(COMPILEFLAGS) -c -o $@ $<
 
 memory.o: memory.cpp addressable.h component.h debug.h memory.h packet.h

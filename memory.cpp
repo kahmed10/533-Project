@@ -26,7 +26,9 @@ memory::memory
     unsigned tCL,
     unsigned tRC_,
     unsigned rows_,
-    unsigned columns_
+    unsigned columns_,
+    unsigned word_size_
+    
 ){ 
     
     check(max_resident_packets > 1, "Max resident packets must be at least 1");
@@ -40,20 +42,17 @@ memory::memory
     this->tRC = tRC_;
     this->rows = rows_;
     this->columns = columns_;
+    this->word_size = word_size_;
     
     this->cooldown = 0;
     this->row_buffer = UINT_MAX; // compulsory miss on first access
-    this->data.resize(rows_ * columns_);
+    this->memory_size = rows_ * columns_ * word_size_;
     
 }
 
 unsigned memory::retire(unsigned packet_index)
 {
     
-	return component::retire(packet_index);
-
-	// Temporarily Disabled
-	/*
     check
     (
         packet_index < this->resident_packets.size(),
@@ -66,55 +65,119 @@ unsigned memory::retire(unsigned packet_index)
     check
     (
         // check if the *last* byte to read within the memory
-        p->address + p->data.size() <= this->data.size(),
-        "Tried to access memory address beyond this memories address space"
+        p->address >= this->memory_size,
+        "Tried to access memory address beyond this memory's address space"
     );
     
-    if (p->type == READ_REQ)
+            
+    static const std::string swap_basename("Swap ");
+    
+
+    switch (p->type)
     {
+        case READ_REQ:
+        {
+            
+            // Transform read request into a read response
+            // recycle the memory allocated for the read request packet
+            // (optimize out a delete ... new pair)
+            p->final_destination = p->original_source;
+            p->original_source = this;
+            p->type = READ_RESP;
+            
+            // keep p->cooldown at zero, it will be routed immediatly
+            // since it already suffered a cooldown
+            return 0;
+            
+        }
         
-        // Transform read request into a read response
-        // recycle the memory allocated for the read request packet
-        // (optimize out a delete ... new pair)
-        p->final_destination = p->original_source;
-        p->original_source = this;
-        p->type = READ_RESP;
+        case WRITE_REQ:
+        {
+            
+            // since we're not keeping track of the actual memory contents,
+            // we can just accept it and do nothing.
+            this->destroy_packet(packet_index);
+            
+            // packet was destroyed, its wakeup time is an eternity
+            return UINT_MAX;
+            
+        }
         
-        memcpy
-        (
-            p->data.data(),                     // destination
-            this->data.data() + p->address,     // source
-            p->data.size() * sizeof(uint8_t)    // num bytes
-        );
+        case SWAP_REQ:
+        {
+            
+            // Create a packet destined for the other HMC we are trading
+            // data with.  We will assume cut-through networking, and account
+            // for the memory read/write latency when generating the packet.
+            
+            // I'm assuming that memory access don't stride across multiple
+            // rows since I don't give a flying fart right now...
+            unsigned cooldown = p->bytes_accessed * this->retirement_latency / this->word_size;
+            if (!row_buffer_hit(p->address))
+            {
+                cooldown += this->tRC;
+                this->row_buffer = p->address / this->columns;
+            }
+            
+            packet* outgoing = new packet
+            (
+                p->original_source,         // the controller is the source to allow an ack to be sent later
+                p->swap_destination,        // final destination component
+                NULL,                       // swap destinatination (it's already been consumed here)
+                p->swap_tag,                // tag to help the controller track packets
+                SWAP_XFER,                  // packet type
+                p->address,
+                p->bytes_accessed,          // number of bytes to swap
+                cooldown,                   // simulated time required to assemble the packet
+                swap_basename + std::to_string(p->swap_tag) // human readable name
+            );
+            
+            this->resident_packets.push_back(outgoing);
+            destroy_packet(packet_index);
+            
+            return cooldown;
+            
+        }
         
-        // keep p->cooldown at zero, it will be routed immediatly
-        // since it already suffered a cooldown
-        return 0;
+        case SWAP_XFER:
+        {
+            
+            // just accept the packet and send an acknowledgement to the
+            // controller that initiated the swap.
+            packet* ack = new packet
+            (
+                this, 
+                p->original_source,         // the final destination is the controller that initiated the swap
+                NULL,                       // swap destination no longer needed
+                p->swap_tag,
+                SWAP_ACK,
+                p->address,
+                p->bytes_accessed,
+                0,                          // no cooldown
+                swap_basename + std::to_string(p->swap_tag)    // human readable name
+            );
+            
+            this->resident_packets.push_back(ack);
+            destroy_packet(packet_index);
+            
+            // we destroyed the packet, cooldown is an eternity
+            return UINT_MAX;
+            
+        }
         
-    } else if (p->type == WRITE_REQ) {
-        
-        // just commit the packet to memory
-        memcpy
-        (
-            this->data.data() + p->address,
-            p->data.data(),
-            p->data.size()
-        );
-        this->destroy_packet(packet_index);
-        
-        // packet was destroyed, its wakeup time is an eternity
-        return UINT_MAX;
-        
-    } else {
-        
-        check(false, "Memory recieved a packet type which it could not process");
-        return UINT_MAX;
+        default:
+        {
+            
+            check(false, "Memory recieved a packet type which it could not process");
+            return UINT_MAX;
+            
+        }
         
     }
-	*/
+    
 }
 
-bool memory::row_buffer_hit(unsigned address)
+bool memory::row_buffer_hit(uint64_t address)
 {
     return (address / this->columns) == row_buffer;
 }
