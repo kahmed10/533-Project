@@ -4,10 +4,10 @@ Results:
 Configuration: 1 CPU Chained Topology (4x 1GB)
 
 4KB Page:
-Migration (500, 80): 
-Migration (1000, 150): 
-Migration (2000, 200):
-No Migration: 
+Migration (500, 80): 298871 Cycles
+Migration (1000, 150): 298871 Cycles
+Migration (2000, 200): 298871 Cycles
+No Migration: 271680 Cycles
 
 Configuration: 2 CPU Chained Topology (4x 1GB)
 
