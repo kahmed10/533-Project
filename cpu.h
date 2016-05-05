@@ -63,6 +63,9 @@ class cpu : public component
             /// packets to.
             addressable* a
         );
+
+		/// Port In for Memory Responses
+		unsigned port_in(unsigned packet_index, component * source);
         
     protected:
         

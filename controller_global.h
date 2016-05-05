@@ -103,6 +103,9 @@ public:
 	/// See component::port_in
 	unsigned port_in(unsigned packet_index, component * source);
 
+	/// See component::port_out
+	unsigned port_out(unsigned packet_index);
+
 	/// Read some of the trace_file and generate read / write packets
 	/// from the trace.  This function will fill any available spaces
 	/// in the resident_packets vector but try to leave at least 3 spaces

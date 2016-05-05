@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     }
     */
 
-	// Simple Topology:
+	// Topology:
 	//
 	// CPU0 --  MODULE0 -- MODULE1 -- MODULE2 -- MODULE3
 	//
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
  		30, // Internal Address Length (Per HMC Module)
 		4096, // Page Size (in Bytes)
 		20, // Epoch Length (in Cycles)
-		4 // Cost of Threshold
+		40 // Cost of Threshold
  	);
 
 	// Add CPU and Modules to Controller

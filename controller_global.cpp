@@ -246,6 +246,71 @@ unsigned controller_global::port_in(unsigned packet_index, component* source)
 	return UINT_MAX;
 }
 
+unsigned controller_global::port_out(unsigned packet_index)
+{
+
+	check
+		(
+			packet_index < this->resident_packets.size(),
+			"Tried to access out-of-bounds resident packet index"
+		);
+
+	// Use routing table to calculate the next waypoint in this packet's
+	// path to its final destination
+	packet* p = this->resident_packets[packet_index];
+	component* immediate_destination;
+	if (p->type == READ_REQ || p->type == WRITE_REQ) {
+		cpu* cpuSource = (cpu*)p->original_source;
+		unsigned cpu_index = getIndexCPU(cpuSource);
+		unsigned nearest_mem_index = 0;
+
+		// Find Memory Module closest to that CPU
+		unsigned cur_min = UINT_MAX;
+		for (int mem_idx = 0; mem_idx < num_mem; mem_idx++) {
+			if (distanceTable[cpu_index][mem_idx] < cur_min) {
+				cur_min = distanceTable[cpu_index][mem_idx];
+				nearest_mem_index = mem_idx;
+			}
+		}
+
+		// Lowest Distance should be 1
+		assert(cur_min == 1);
+		immediate_destination = (component*)memModules[nearest_mem_index];
+	}
+	else {
+		immediate_destination = this->routing_table[p->final_destination];
+	}
+
+	
+	if (immediate_destination == NULL) {
+		cout << "Error: No Immediate Destination for Packet " << p->name << " At Component: " << this->name << endl;
+		cout << "Press Enter to Exit" << endl;
+		exit((int)getchar());
+	}
+
+	unsigned new_cooldown = immediate_destination->port_in(packet_index, this);
+	// only assign a new cooldown if the migration failed
+	if (new_cooldown != UINT_MAX)
+		p->cooldown = new_cooldown;
+
+	if (DEBUG) {
+		if (new_cooldown == UINT_MAX)
+		{
+			cout
+				<< "Moved \""
+				<< p->name
+				<< "\" from \""
+				<< this->name
+				<< "\" to \""
+				<< this->routing_table[p->final_destination]->name
+				<< '\"'
+				<< endl;
+		}
+	}
+
+	return new_cooldown;
+}
+
 unsigned controller_global::generate()
 {
 

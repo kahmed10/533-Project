@@ -41,6 +41,7 @@ cpu::cpu
     this->trace_file >> std::hex;
     
     this->name = name_;
+	this->active_Operations = 0;
 	this->max_Operations = max_Operations_;
     this->initiation_interval = initiation_interval_;
     check(max_resident_packets >= 4, "max_resident_packets_ should be at least 4");
@@ -91,7 +92,7 @@ unsigned cpu::generate()
       - 3
       - (long signed)(this->resident_packets.size());
     
-    if (space_to_fill > 0)
+    if (space_to_fill > 0 && active_Operations <= max_Operations)
     {
         
         unsigned new_size = this->max_resident_packets - 3;
@@ -109,7 +110,10 @@ unsigned cpu::generate()
 				std::istringstream iss(line);
 				iss >> rw >> std::hex >> address;
 
-				if (rw != 'R' && rw != 'W')
+				if (rw == 'R') {
+					active_Operations++;
+				}
+				else if (rw != 'R' && rw != 'W')
 				{
 					std::cerr
 						<< "Error. CPU "
@@ -191,5 +195,57 @@ void cpu::add_addressable(addressable* a)
 {
     check(a != NULL, "CPU can not register NULL addressable");
     this->memory_devices.push_back(a);
+}
+
+unsigned cpu::port_in(unsigned packet_index, component * source)
+{
+	
+	// Debugging checks
+	check
+		(
+			packet_index < source->resident_packets.size(),
+			"Tried to access out-of-bounds resident packet index"
+			);
+	check(source != NULL, "souce component cannot be NULL");
+
+	// make sure the component has not accepted another packet too recently
+	if (this->cooldown > 0)
+		return this->cooldown;
+
+	// make sure this component is not at its maximum packet capacity
+	if (this->resident_packets.size() >= this->max_resident_packets) {
+		// source->resident_packets[packet_index]->cooldown = 1;
+		return 1; //  this->min_packet_cooldown();
+	}
+
+	// this component is capable of accepting new packets - move it
+	packet* p = this->resident_packets
+		[
+			this->move_packet(packet_index, source, this)
+		];
+
+
+	// Only Responses should reach here
+	if (p->type == READ_RESP) {
+		if (active_Operations <= 0) std::cerr << "CPU: Received Response when no Loads are in Flight" << std::endl;
+		active_Operations--;
+	}
+	else {
+		std::cerr << "CPU: Illegal Packet Type: " << p->type << std::endl;
+	}
+
+	// since this component just accepted a packet, the component
+	// itself needs to cool down before accepting another
+	this->cooldown = this->initiation_interval;
+
+	// calculate new packet cooldown
+	if (p->final_destination == this)
+		p->cooldown = this->retirement_latency;
+	else
+		p->cooldown = this->routing_latency;
+
+	// the packet has left source, therefore its new cooldown on source
+	// is eternity
+	return UINT_MAX;
 }
 
