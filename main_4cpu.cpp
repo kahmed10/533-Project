@@ -30,10 +30,10 @@ int main(int argc, char** argv)
 	//
 	// 8x 1GB (33bit Physical Address)
 
-	cpu* CPU0 = new cpu("trace_cpu0.txt", "CPU0");
-	cpu* CPU1 = new cpu("trace_cpu1.txt", "CPU1");
-	cpu* CPU2 = new cpu("trace_cpu2.txt", "CPU2");
-	cpu* CPU3 = new cpu("trace_cpu3.txt", "CPU3");
+	cpu* CPU0 = new cpu("trace_cpu_0.txt", "CPU0");
+	cpu* CPU1 = new cpu("trace_cpu_1.txt", "CPU1");
+	cpu* CPU2 = new cpu("trace_cpu_2.txt", "CPU2");
+	cpu* CPU3 = new cpu("trace_cpu_3.txt", "CPU3");
 
 	memory* MODULE0 = new memory(0x000000000, 0x03FFFFFFF, "M0", 1, UINT_MAX, 10);
 	memory* MODULE1 = new memory(0x040000000, 0x07FFFFFFF, "M1", 1, UINT_MAX, 10);
@@ -65,8 +65,9 @@ int main(int argc, char** argv)
 		33, // Address Length
 		30, // Internal Address Length (Per HMC Module)
 		4096, // Page Size (in Bytes)
-		2000, // Epoch Length (in Cycles)
-		100 // Cost of Threshold
+		200, // Epoch Length (in Cycles)
+		50, // Cost of Threshold
+		5 // Difference Threshold
 	);
 
 	// Add CPU and Modules to Controller
@@ -150,7 +151,7 @@ int main(int argc, char** argv)
 	MODULE1->add_route(CPU1, MODULE0);
 	MODULE1->add_route(CPU2, MODULE2);
 	MODULE1->add_route(CPU3, MODULE2);
-	MODULE1->add_route(CONTROLLER, MODULE1);
+	MODULE1->add_route(CONTROLLER, MODULE0);
 	MODULE1->add_route(MODULE0, MODULE0);
 	MODULE1->add_route(MODULE2, MODULE2);
 	MODULE1->add_route(MODULE3, MODULE2);
@@ -238,6 +239,9 @@ int main(int argc, char** argv)
 	MODULE7->add_route(MODULE6, MODULE6);
 
 	CPU0->add_addressable(CONTROLLER);
+	CPU1->add_addressable(CONTROLLER);
+	CPU2->add_addressable(CONTROLLER);
+	CPU3->add_addressable(CONTROLLER);
 
 	// Register all components with a system driver which
 	// drives packets generation/routing/retirement

@@ -28,21 +28,21 @@ int main(int argc, char** argv)
 	//
 	// 4x 1GB (32bit Physical Address)
 
-	cpu* CPU0 = new cpu("trace_cpu_0.txt", "CPU0");
-	cpu* CPU1 = new cpu("trace_cpu_1.txt", "CPU1");
+	cpu* CPU0 = new cpu("trace_dual_cpu1.txt", "CPU0");
+	cpu* CPU1 = new cpu("trace_dual_cpu2.txt", "CPU1");
 
-	memory* MODULE0 = new memory(0x00000000, 0x3FFFFFFF, "M0", 1, UINT_MAX, 10);
-	memory* MODULE1 = new memory(0x40000000, 0x7FFFFFFF, "M1", 1, UINT_MAX, 10);
-	memory* MODULE2 = new memory(0x80000000, 0xBFFFFFFF, "M2", 1, UINT_MAX, 10);
-	memory* MODULE3 = new memory(0xC0000000, 0xFFFFFFFF, "M3", 1, UINT_MAX, 10);
-
+	memory* MODULE0 = new memory(0x00000000, 0x3FFFFFFF, "M0", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE1 = new memory(0x40000000, 0x7FFFFFFF, "M1", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE2 = new memory(0x80000000, 0xBFFFFFFF, "M2", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE3 = new memory(0xC0000000, 0xFFFFFFFF, "M3", 1, UINT_MAX, 10, 32, 4);
+	
 	controller_global* CONTROLLER = new controller_global
 		(
 			// -- Simulator Information
 			"Global Migration Controller", // Name
 			0, // Initiation Interval
 			32, // Max Resident Packets
-			0, // Routing Latency
+			1, // Routing Latency
 			0, // Cooldown
 
 			   // -- System Configuration
