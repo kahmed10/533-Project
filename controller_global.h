@@ -103,9 +103,6 @@ public:
 	/// See component::port_in
 	unsigned port_in(unsigned packet_index, component * source);
 
-	/// See component::advance_cooldowns
-	unsigned advance_cooldowns(unsigned time);
-
 	/// Read some of the trace_file and generate read / write packets
 	/// from the trace.  This function will fill any available spaces
 	/// in the resident_packets vector but try to leave at least 3 spaces
@@ -184,9 +181,6 @@ protected:
 
 	/// Migration Cost Threshold
 	unsigned cost_threshold;
-
-	/// Local Clock
-	uint64_t cycle = 0;
 
 };
 

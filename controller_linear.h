@@ -8,8 +8,8 @@
 /// Target OS:              Scientific Linux 7.1 \n
 /// Target architecture:    x86_64 */
 
-#ifndef __HEADER_GUARD_CONTROLLER__
-#define __HEADER_GUARDC_CONTROLLER__
+#ifndef __HEADER_GUARD_CONTROLLER_LINEAR__
+#define __HEADER_GUARD_CONTROLLER_LINEAR__
 
 #include <cstdint>
 #include <vector>

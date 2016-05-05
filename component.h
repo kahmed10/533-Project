@@ -206,6 +206,8 @@ class component
         /// component can accept another packet.  It is decreased after
         /// calls to advance_cooldowns().
         unsigned cooldown;
+
+		unsigned cycle;
         
         /// Some packets may arrive at this component but only passing
         /// through and need the be routed to the next component along the 

@@ -1,6 +1,6 @@
 /// \file
 /// Project:                Migration Sandbox \n
-/// File Name:              cpu.h \n
+/// File Name:              cpu_modified.h \n
 /// Required Libraries:     none \n
 /// Date created:           Thurs Feb 18 2016 \n
 /// Engineers:              Khalique Ahmed
@@ -10,8 +10,8 @@
 /// Target OS:              Ubuntu Linux 14.04 and Windows \n
 /// Target architecture:    x86 (64 bit) */
 
-#ifndef __HEADER_GUARD_CPU__
-#define __HEADER_GUARD_CPU__
+#ifndef __HEADER_GUARD_CPU_MODIFIED__
+#define __HEADER_GUARD_CPU_MODIFIED__
 
 #include <fstream>
 #include <vector>
@@ -26,16 +26,18 @@ class cpu : public component
     
     public:
         
-        cpu
+		cpu
         (
             /// [in] See \ref trace_file
             const std::string& trace_file_,
             /// [in] See \ref component::name
             const std::string& name_ = "Unnamed CPU",
+			/// [in] Maximum number of Loads allowed in flight
+			unsigned max_Operations_ = 10,
             /// [in] See \ref component::initiation_interval
             unsigned initiation_interval_ = 0,
             /// [in] See \ref component::initiation_interval
-            unsigned max_resident_packets_ = 1024,
+            unsigned max_resident_packets_ = 8,
             /// [in] See \ref component::routing_latency
             unsigned routing_latency_ = 0,
             /// [in] See \ref component::retirement_latency
@@ -92,6 +94,9 @@ class cpu : public component
         /// it prints an error and continues execution.
         std::vector<addressable*> memory_devices;
         
+		/// Number of Active Operations & Maximum Operations
+		unsigned active_Operations;
+		unsigned max_Operations;
 };
 
 #endif // header guard

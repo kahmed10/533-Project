@@ -1,6 +1,6 @@
 // 1 = enable extra checks and error messages
 // else = maximum performance
-#define DEBUG 1
+#define DEBUG 0
 
 #if DEBUG == 1
     #define check(condition, message) \

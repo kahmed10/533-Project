@@ -54,7 +54,8 @@ void component::add_route
 unsigned component::advance_cooldowns(unsigned time)
 {
     
-    
+	this->cycle += time;
+
     // advance the cooldown for this component
     if (time < this->cooldown)
         this->cooldown -= time;
@@ -142,8 +143,10 @@ unsigned component::port_in(unsigned packet_index, component* source)
         return this->cooldown;
     
     // make sure this component is not at its maximum packet capacity
-    if (this->resident_packets.size() >= this->max_resident_packets)
-        return this->min_packet_cooldown();
+	if (this->resident_packets.size() >= this->max_resident_packets) {
+		// source->resident_packets[packet_index]->cooldown = 1;
+		return 1; //  this->min_packet_cooldown();
+	}
     
     // this component is capable of accepting new packets - move it
     packet* p = this->resident_packets
@@ -195,7 +198,7 @@ if (DEBUG) {
     if (new_cooldown == UINT_MAX)
     {
     	cout
-    	    << "Migrated \""
+    	    << "Moved \""
     	    << p->name
     	    << "\" from \""
     	    << this->name

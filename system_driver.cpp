@@ -54,10 +54,8 @@ unsigned long system_driver::simulate()
             << std::endl << std::endl
             << "### Iteration "
             << iteration
-            << " | Elapsed Time "
+            << "   Elapsed Time "
             << elapsed_ticks
-            << " | Advancement Amount "
-            << advancement_amount
             << " ###"
             << std::endl;
         iteration++;
@@ -72,6 +70,7 @@ unsigned long system_driver::simulate()
             unsigned cur_cooldown = this->resident_components[ix]->generate();
             if (cur_cooldown < advancement_accumulator)
                 advancement_accumulator = cur_cooldown;
+			if (DEBUG) std::cout << "generate() Cooldown = " << cur_cooldown << std::endl;
         }
         
         // advance cooldowns...
@@ -80,6 +79,7 @@ unsigned long system_driver::simulate()
             unsigned cur_cooldown = this->resident_components[ix]->advance_cooldowns(advancement_amount);
             if (cur_cooldown < advancement_accumulator)
                 advancement_accumulator = cur_cooldown;
+			if (DEBUG) std::cout << "advance_cooldowns() Cooldown = " << cur_cooldown << std::endl;
         }
         
         // wake packets...
@@ -88,6 +88,7 @@ unsigned long system_driver::simulate()
             unsigned cur_cooldown = this->resident_components[ix]->wake_packets();
             if (cur_cooldown < advancement_accumulator)
                 advancement_accumulator = cur_cooldown;
+			if (DEBUG) std::cout << "wake_packets() Cooldown = " << cur_cooldown << std::endl;
         }
         
         advancement_amount = advancement_accumulator;

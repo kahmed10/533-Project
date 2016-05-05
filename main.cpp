@@ -22,7 +22,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
 
-    /*
+	/*
     if (argc != 2)
     {
         cerr << "Error. Please specify a memory trace" << endl;
@@ -30,109 +30,112 @@ int main(int argc, char** argv)
     }
     */
 
-    // Simple Chain Topology:
-    //
-    // processor0 -- controller --  hmc0  -- hmc1 -- hmc2 -- hmc3
-    //
-    // 4x 1GB (32bit Physical Address)
+	// Simple Topology:
+	//
+	// CPU0 --  MODULE0 -- MODULE1 -- MODULE2 -- MODULE3
+	//
+	// 4x 1GB (32bit Physical Address)
 
-    cpu* processor0 = new cpu("trace_simple.txt", "processor0");
- 
-    memory* hmc0 = new memory(0x00000000, 0x3FFFFFFF, "M0");
-    memory* hmc1 = new memory(0x40000000, 0x7FFFFFFF, "M1");
-    memory* hmc2 = new memory(0x80000000, 0xBFFFFFFF, "M2");
-    memory* hmc3 = new memory(0xC0000000, 0xFFFFFFFF, "M3");
-     
-     controller_global* controller = new controller_global
-         (
-            // -- Simulator Information
-            "Global Migration controller", // Name
-            0, // Initiation Interval
-            64, // Max Resident Packets
-            0, // Routing Latency
-            0, // Cooldown
+    cpu* CPU0 = new cpu("trace_simple.txt", "CPU0");
 
-            // -- System Configuration
-             0x00000000, // First Address
-             0xFFFFFFFF, // Last Address
-             
-            // -- processor Configuration
-            1, // Number of processors
-             
-            // -- Memory Configuration
-            4, // Number of HMC Modules
-             32, // Address Length
-             30, // Internal Address Length (Per HMC Module)
-            1024, // Page Size (in Bytes)
-            5000, // Epoch Length (in Cycles)
-            100 // Migration Threshold (number of Accesses)
-         );
-    
-    // Add processor and Modules to controller
-    controller->add_Cpu(processor0);
-    controller->add_Module(hmc0);
-    controller->add_Module(hmc1);
-    controller->add_Module(hmc2);
-    controller->add_Module(hmc3);
+    memory* MODULE0 = new memory(0x00000000, 0x3FFFFFFF, "M0", 1, UINT_MAX, 10);
+    memory* MODULE1 = new memory(0x40000000, 0x7FFFFFFF, "M1", 1, UINT_MAX, 10);
+    memory* MODULE2 = new memory(0x80000000, 0xBFFFFFFF, "M2", 1, UINT_MAX, 10);
+    memory* MODULE3 = new memory(0xC0000000, 0xFFFFFFFF, "M3", 1, UINT_MAX, 10);
+	 
+ 	controller_global* CONTROLLER = new controller_global
+ 	(
+		// -- Simulator Information
+		"Global Migration Controller", // Name
+		0, // Initiation Interval
+		4, // Max Resident Packets
+		0, // Routing Latency
+		0, // Cooldown
+		
+		// -- System Configuration
+ 		0x00000000, // First Address
+ 		0xFFFFFFFF, // Last Address
+ 		
+		// -- CPU Configuration
+		1, // Number of CPUs
+ 		
+		// -- Memory Configuration
+		4, // Number of HMC Modules
+ 		32, // Address Length
+ 		30, // Internal Address Length (Per HMC Module)
+		4096, // Page Size (in Bytes)
+		20, // Epoch Length (in Cycles)
+		4 // Cost of Threshold
+ 	);
 
-    // Specify Distance Information
-    controller->add_Distance(processor0, hmc0, 1);
-    controller->add_Distance(processor0, hmc1, 2);
-    controller->add_Distance(processor0, hmc2, 3);
-    controller->add_Distance(processor0, hmc3, 4);
+	// Add CPU and Modules to Controller
+	CONTROLLER->add_Cpu(CPU0);
+	CONTROLLER->add_Module(MODULE0);
+	CONTROLLER->add_Module(MODULE1);
+	CONTROLLER->add_Module(MODULE2);
+	CONTROLLER->add_Module(MODULE3);
 
-    processor0->add_route(controller, controller);
-    processor0->add_route(hmc0, controller);
-    processor0->add_route(hmc1, controller);
-    processor0->add_route(hmc2, controller);
-    processor0->add_route(hmc3, controller);
-    
-    controller->add_route(processor0, processor0);
-    controller->add_route(hmc0, hmc0);
-    controller->add_route(hmc1, hmc0);
-    controller->add_route(hmc2, hmc0);
-    controller->add_route(hmc3, hmc0);
+	// Specify Distance Information
+	CONTROLLER->add_Distance(CPU0, MODULE0, 1);
+	CONTROLLER->add_Distance(CPU0, MODULE1, 2);
+	CONTROLLER->add_Distance(CPU0, MODULE2, 3);
+	CONTROLLER->add_Distance(CPU0, MODULE3, 4);
 
-    hmc0->add_route(processor0, controller);
-    hmc0->add_route(controller, controller);
-    hmc0->add_route(hmc1, hmc1);
-    hmc0->add_route(hmc2, hmc1);
-    hmc0->add_route(hmc3, hmc1);
+	CPU0->add_route(CONTROLLER, CONTROLLER);
+	CPU0->add_route(MODULE0, CONTROLLER);
+	CPU0->add_route(MODULE1, CONTROLLER);
+	CPU0->add_route(MODULE2, CONTROLLER);
+	CPU0->add_route(MODULE3, CONTROLLER);
+	
+	CONTROLLER->add_route(CPU0, CPU0);
+	CONTROLLER->add_route(MODULE0, MODULE0);
+	CONTROLLER->add_route(MODULE1, MODULE0);
+	CONTROLLER->add_route(MODULE2, MODULE0);
+	CONTROLLER->add_route(MODULE3, MODULE0);
 
-    hmc1->add_route(processor0, hmc0);
-    hmc1->add_route(controller, hmc0);
-    hmc1->add_route(hmc0, hmc0);
-    hmc1->add_route(hmc2, hmc2);
-    hmc1->add_route(hmc3, hmc2);
+	MODULE0->add_route(CPU0, CONTROLLER);
+	MODULE0->add_route(CONTROLLER, CONTROLLER);
+	MODULE0->add_route(MODULE1, MODULE1);
+	MODULE0->add_route(MODULE2, MODULE1);
+	MODULE0->add_route(MODULE3, MODULE1);
 
-    hmc2->add_route(processor0, hmc1);
-    hmc2->add_route(controller, hmc1);
-    hmc2->add_route(hmc0, hmc1);
-    hmc2->add_route(hmc1, hmc1);
-    hmc2->add_route(hmc3, hmc3);
+	MODULE1->add_route(CPU0, MODULE0);
+	MODULE1->add_route(CONTROLLER, MODULE0);
+	MODULE1->add_route(MODULE0, MODULE0);
+	MODULE1->add_route(MODULE2, MODULE2);
+	MODULE1->add_route(MODULE3, MODULE2);
 
-    hmc3->add_route(processor0, hmc2);
-    hmc3->add_route(controller, hmc2);
-    hmc3->add_route(hmc0, hmc2);
-    hmc3->add_route(hmc1, hmc2);
-    hmc3->add_route(hmc2, hmc2);
+	MODULE2->add_route(CPU0, MODULE1);
+	MODULE2->add_route(CONTROLLER, MODULE1);
+	MODULE2->add_route(MODULE0, MODULE1);
+	MODULE2->add_route(MODULE1, MODULE1);
+	MODULE2->add_route(MODULE3, MODULE3);
 
-    processor0->add_addressable(controller);
+	MODULE3->add_route(CPU0, MODULE2);
+	MODULE3->add_route(CONTROLLER, MODULE2);
+	MODULE3->add_route(MODULE0, MODULE2);
+	MODULE3->add_route(MODULE1, MODULE2);
+	MODULE3->add_route(MODULE2, MODULE2);
+
+    CPU0->add_addressable(CONTROLLER);
     
     // Register all components with a system driver which
     // drives packets generation/routing/retirement
-    system_driver motherboard;
-    motherboard.add_component(processor0);
-    motherboard.add_component(controller);
-    motherboard.add_component(hmc0);
-    motherboard.add_component(hmc1);
-    motherboard.add_component(hmc2);
-    motherboard.add_component(hmc3);
+    system_driver* motherboard = new system_driver;
+    motherboard->add_component(CPU0);
+	motherboard->add_component(CONTROLLER);
+    motherboard->add_component(MODULE0);
+    motherboard->add_component(MODULE1);
+    motherboard->add_component(MODULE2);
+    motherboard->add_component(MODULE3);
+
+    // Run Simulation
+    motherboard->simulate();
     
-    // Run simulation
-    motherboard.simulate();
-    
-    return 0;
+	// Free Heap
+	delete motherboard;
+
+    return (0);
     
 }
 

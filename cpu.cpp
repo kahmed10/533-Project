@@ -12,6 +12,9 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <iomanip>
 #include "cpu.h"
 #include "debug.h"
 #include "packet.h"
@@ -20,6 +23,7 @@ cpu::cpu
 (
     const std::string& trace_file_,
     const std::string& name_,
+	unsigned max_Operations_,
     unsigned initiation_interval_,
     unsigned max_resident_packets_,
     unsigned routing_latency_,
@@ -37,6 +41,7 @@ cpu::cpu
     this->trace_file >> std::hex;
     
     this->name = name_;
+	this->max_Operations = max_Operations_;
     this->initiation_interval = initiation_interval_;
     check(max_resident_packets >= 4, "max_resident_packets_ should be at least 4");
     this->max_resident_packets = max_resident_packets_;
@@ -54,10 +59,7 @@ cpu::cpu
 unsigned cpu::generate()
 {
     
-    // increments every time a packet is generated to give it a unique name
-    static unsigned long packet_number = 0;
-    
-    // debugging checks
+	// debugging checks
     check
     (
         this->max_resident_packets >= 4,
@@ -65,8 +67,10 @@ unsigned cpu::generate()
     );
         
     // Don't do anything if we've gone through the whole trace already
-    if (!this->trace_file.is_open())
-        return this->min_packet_cooldown();
+	if (!this->trace_file.is_open() || !this->trace_file.good()) {
+		if (DEBUG) std::cout << "Trace Ended" << std::endl;
+		return this->min_packet_cooldown();
+	}
     
     // This actually should never (rarely) happen but is included for
     // extra robustness against files that are corrupt but open successfully.
@@ -95,26 +99,29 @@ unsigned cpu::generate()
         for (unsigned ix = this->resident_packets.size(); ix < new_size; ix++)
         {
             
-            // read access type from trace file
-            // either 'R' for read or 'W' for write
-            char rw;
-            this->trace_file >> rw;
-            if (rw != 'R' && rw != 'W')
-            {
-                std::cerr
-                    << "Error. CPU "
-                    << this->name
-                    << " Encountered unknown access type '"
-                    << rw
-                    << "'.  While reading memory trace. Only 'R' or 'W' are allowed"
-                    << std::endl;
-            }
-            
-            // read memory address from trace file (hex)
-            // note the the constructor already did this->trace_file >> hex
-            // and it should never be changed after that
-            uint64_t address;
-            this->trace_file >> address;
+            // read a line from trace file
+			std::string line;
+			char rw;
+			uint64_t address;
+
+			if (getline(this->trace_file, line)) {
+
+				std::istringstream iss(line);
+				iss >> rw >> std::hex >> address;
+
+				if (rw != 'R' && rw != 'W')
+				{
+					std::cerr
+						<< "Error. CPU "
+						<< this->name
+						<< " Encountered unknown access type '"
+						<< rw
+						<< "'.  While reading memory trace. Only 'R' or 'W' are allowed"
+						<< "\n Line: " << line << std::endl
+						<< std::endl;
+				}
+			}
+			else break;
             
             // if we reached the end of the file or encountered an error on
             // the previous iteration, don't generate any more packets
@@ -146,11 +153,15 @@ unsigned cpu::generate()
                 continue;
             }
             
+			std::stringstream hex_addr;
+			hex_addr << std::hex << address;
+			std::string addr_str(hex_addr.str());
+
             packet* p = new packet
             (
                 this,           // original source
                 destination,    // memory containing requested data word
-				NULL, 
+				NULL,
 				0,
                 rw == 'R' ? READ_REQ : WRITE_REQ,
                 address,
@@ -158,14 +169,13 @@ unsigned cpu::generate()
                 0,  // cooldown
                 this->name
                     + (rw == 'R' ? " read " : " write ")
-                    + std::to_string(packet_number)
+                    + addr_str
                     // name
             );
             this->resident_packets.push_back(p);
-            packet_number++;
 
-// debugging - DELETE ME
-std::cout << "Generated \"" << p->name << '\"' << std::endl;
+			if (DEBUG) 
+				std::cout << "Generated \"" << p->name << '\"' << std::endl;
 
         }
         
@@ -173,7 +183,7 @@ std::cout << "Generated \"" << p->name << '\"' << std::endl;
     
     // All generated packets are pre-cooled, to keep the memory
     // network saturated
-    return 0;
+    return UINT_MAX;
     
 }
 

@@ -103,7 +103,7 @@ controller_global::~controller_global()
 	delete[] memModules;
 	delete[] sourceCPUs;
 
-	for (int i = 0; i < num_cpu; i++) {
+	for (unsigned i = 0; i < num_cpu; i++) {
 		delete[] distanceTable[i];
 	}
 	delete[] distanceTable;
@@ -118,6 +118,8 @@ controller_global::~controller_global()
 void controller_global::initialize()
 {
 
+	cycle = 0;
+
 	// Create Table of Memory Pointers
 	numActiveModules = 0;
 	memModules = new memory*[num_mem];
@@ -128,9 +130,9 @@ void controller_global::initialize()
 
 	// Create Table for Distances
 	distanceTable = new unsigned*[num_cpu];
-	for (int i = 0; i < num_cpu; i++) {
+	for (unsigned i = 0; i < num_cpu; i++) {
 		distanceTable[i] = new unsigned[num_mem];
-		for (int j = 0; j < num_mem; j++) {
+		for (unsigned j = 0; j < num_mem; j++) {
 			distanceTable[i][j] = 0;
 		}
 	}
@@ -211,8 +213,10 @@ unsigned controller_global::port_in(unsigned packet_index, component* source)
 	}
 
 	// make sure this component is not at its maximum packet capacity
-	if (this->resident_packets.size() >= this->max_resident_packets)
-		return this->min_packet_cooldown();
+	if (this->resident_packets.size() >= this->max_resident_packets) {
+		// source->resident_packets[packet_index]->cooldown = 1;
+		return 1; // this->min_packet_cooldown(); // Wait and Try Again
+	}
 
 	// this component is capable of accepting new packets - move it
 	packet* p = this->resident_packets
@@ -227,7 +231,7 @@ unsigned controller_global::port_in(unsigned packet_index, component* source)
 		store(p);
 	}
 	else {
-		cout << "Packet of Invalid Type at Controller, Name = " << p->name << endl;
+		cout << "Packet of Invalid Type: " << p->type << " at Controller, Name = " << p->name << endl;
 	}
 
 	// since this component just accepted a packet, the component
@@ -244,6 +248,9 @@ unsigned controller_global::port_in(unsigned packet_index, component* source)
 
 unsigned controller_global::generate()
 {
+
+	cout << "Controller Cycle: " << cycle << endl;
+
 	// Check for the End of Epoch
 	if (cycle >= epoch_length) {
 		// Select Candidates for Migration
@@ -253,12 +260,12 @@ unsigned controller_global::generate()
 
 		// Clear History
 		for (uint64_t i = 0; i < mapTable_size; i++) {
-			hTable[i] = new unsigned[num_cpu];
 			for (int j = 0; j < num_cpu; j++) {
 				hTable[i][j] = 0;
 			}
 		}
 
+		cycle = 0;
 		if (candidates.size() > 0) return 0;
 	}
 
@@ -267,12 +274,13 @@ unsigned controller_global::generate()
 
 void controller_global::migrate(vector<uint64_t> candidates)
 {
+
 	if (candidates.size() > 0) {
 		for (int i = 0; i < candidates.size(); i++) {
 
-			unsigned page = candidates[i];
-			unsigned ideal_cpu;
-			unsigned ideal_mem;
+			uint64_t page = candidates[i];
+			unsigned ideal_cpu = 0;
+			unsigned ideal_mem = 0;
 
 			// Find CPU with most Accesses
 			unsigned cur_max = 0;
@@ -292,8 +300,13 @@ void controller_global::migrate(vector<uint64_t> candidates)
 				}
 			}
 
-			memory* swapModule_A = find_Destination(page << offset_length);
+			uint64_t address_A = page << offset_length;
+			memory* swapModule_A = find_Destination(address_A);
 			memory* swapModule_B = memModules[ideal_mem];
+
+			if (swapModule_A == swapModule_B) {
+				goto ENDCYCLE;
+			}
 
 			tag_count++;
 			unsigned tag = tag_count;
@@ -356,11 +369,14 @@ void controller_global::migrate(vector<uint64_t> candidates)
 			locked_Pages.push_back(page_A);
 			locked_Pages.push_back(page_B);
 
-			if (DEBUG) {
+			// if (DEBUG) {
 				cout << " \n Performed Migration: " << endl;
 				cout << " mapTable[" << old_index << "] = " << new_Value << endl;
 				cout << " mapTable[" << new_index << "] = " << old_Value << endl;
-			}
+			// }
+
+			ENDCYCLE:
+				;
 		}
 	}
 }
@@ -472,6 +488,8 @@ void controller_global::update_History(cpu * cpuSource, unsigned address)
 vector<uint64_t> controller_global::select_Candidates()
 {
 
+	cout << "End of Epoch, Evaluating Candidates for Migration" << endl;
+
 	// List of Candidates for Migration
 	vector<uint64_t> candidate_Indices;
 
@@ -493,6 +511,10 @@ vector<uint64_t> controller_global::select_Candidates()
 
 		// Evaluate Costs and Uniformity of Accesses
 		if (total_cost > cost_threshold) {
+
+			cout << "Evaluated cost = " << total_cost << endl;
+			cout << "Cost threshold = " << cost_threshold << endl;
+
 			// Needs to improve
 			if (candidate_Indices.size() <= 4)
 				candidate_Indices.push_back(page_idx);
@@ -537,43 +559,4 @@ unsigned controller_global::getIndexCPU(cpu * sourceCPU)
 
 	cerr << "CPU Not Found in Controller" << endl;
 	return 0;
-}
-
-unsigned controller_global::advance_cooldowns(unsigned time)
-{
-
-	// increase cycle count
-	this->cycle += time;
-
-	// advance the cooldown for this component
-	if (time < this->cooldown)
-		this->cooldown -= time;
-	else
-		this->cooldown = 0;
-
-	// advance the cooldowns for all resident packets
-	// do not include component cooldown in minima calculation, since
-	// we don't want to get stuck because "a components are ready"
-	unsigned min_cooldown = UINT_MAX;
-	unsigned num_resident_packets = this->resident_packets.size();
-	for (unsigned ix = 0; ix < num_resident_packets; ix++)
-	{
-
-		packet* p = this->resident_packets[ix];
-		unsigned c = p->cooldown;
-
-		if (time < c)
-			c -= time;
-		else
-			c = 0;
-
-		p->cooldown = c;
-
-		if (c < min_cooldown)
-			min_cooldown = c;
-
-	}
-
-	return min_cooldown;
-
 }
