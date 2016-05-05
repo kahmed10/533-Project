@@ -304,79 +304,76 @@ void controller_global::migrate(vector<uint64_t> candidates)
 			memory* swapModule_A = find_Destination(address_A);
 			memory* swapModule_B = memModules[ideal_mem];
 
-			if (swapModule_A == swapModule_B) {
-				goto ENDCYCLE;
-			}
+			if (swapModule_A != swapModule_B) {
 
-			tag_count++;
-			unsigned tag = tag_count;
+				tag_count++;
+				unsigned tag = tag_count;
 
-			// Add Packets to Controller
-			packet* migrate_A = new packet
-			(
-				this, // Original source
-				swapModule_A, // Migration Source
-				swapModule_B, // Migration Destination
-				tag,  // Tag
-				SWAP_REQ,
-				0,  // Address
-				4,  // bytes accessed
-				0,  // cooldown
-				"Migrate " + swapModule_A->name + " -> " + swapModule_B->name // name
-			);
-			packet* migrate_B = new packet
-			(
-				this, // Original source
-				swapModule_B, // Migration Source
-				swapModule_A, // Migration Destination
-				tag,  // Tag
-				SWAP_REQ,
-				0,  // Address
-				4,  // bytes accessed
-				0,  // cooldown
-				"Migrate " + swapModule_B->name + " -> " + swapModule_A->name // name
-			);
-			this->resident_packets.push_back(migrate_A);
-			this->resident_packets.push_back(migrate_B);
+				// Add Packets to Controller
+				packet* migrate_A = new packet
+					(
+						this, // Original source
+						swapModule_A, // Migration Source
+						swapModule_B, // Migration Destination
+						tag,  // Tag
+						SWAP_REQ,
+						0,  // Address
+						4,  // bytes accessed
+						0,  // cooldown
+						"Migrate " + swapModule_A->name + " -> " + swapModule_B->name // name
+						);
+				packet* migrate_B = new packet
+					(
+						this, // Original source
+						swapModule_B, // Migration Source
+						swapModule_A, // Migration Destination
+						tag,  // Tag
+						SWAP_REQ,
+						0,  // Address
+						4,  // bytes accessed
+						0,  // cooldown
+						"Migrate " + swapModule_B->name + " -> " + swapModule_A->name // name
+						);
+				this->resident_packets.push_back(migrate_A);
+				this->resident_packets.push_back(migrate_B);
 
-			// Swap the two indices in MapTable
-			unsigned old_index;
-			unsigned new_index;
+				// Swap the two indices in MapTable
+				unsigned old_index;
+				unsigned new_index;
 
-			unsigned old_module_ID = page >> internal_index_length;
-			unsigned new_module_ID = memModules[ideal_mem]->get_first_address() >> internal_address_length;
+				unsigned old_module_ID = page >> internal_index_length;
+				unsigned new_module_ID = memModules[ideal_mem]->get_first_address() >> internal_address_length;
 
-			new_index = new_module_ID << internal_index_length;
-			unsigned mask = pow2(internal_index_length) - 1;
-			unsigned new_internal_idx = page & mask;
+				new_index = new_module_ID << internal_index_length;
+				unsigned mask = pow2(internal_index_length) - 1;
+				unsigned new_internal_idx = page & mask;
 
-			old_index = page;
-			new_index = new_index | new_internal_idx;
+				old_index = page;
+				new_index = new_index | new_internal_idx;
 
-			unsigned old_Value = mapTable[old_index];
-			unsigned new_Value = mapTable[new_index];
+				unsigned old_Value = mapTable[old_index];
+				unsigned new_Value = mapTable[new_index];
 
-			mapTable[old_index] = new_Value;
-			mapTable[new_index] = old_Value;
+				mapTable[old_index] = new_Value;
+				mapTable[new_index] = old_Value;
 
-			// Add Migration Pages to Locked Page List
-			lockedPage page_A, page_B;
-			page_A.page_idx = old_index;
-			page_A.tag = tag;
-			page_B.page_idx = new_index;
-			page_B.tag = tag;
+				// Add Migration Pages to Locked Page List
+				lockedPage page_A, page_B;
+				page_A.page_idx = old_index;
+				page_A.tag = tag;
+				page_B.page_idx = new_index;
+				page_B.tag = tag;
 
-			locked_Pages.push_back(page_A);
-			locked_Pages.push_back(page_B);
+				locked_Pages.push_back(page_A);
+				locked_Pages.push_back(page_B);
 
-			// if (DEBUG) {
+				// if (DEBUG) {
 				cout << " \n Performed Migration: " << endl;
 				cout << " mapTable[" << old_index << "] = " << new_Value << endl;
 				cout << " mapTable[" << new_index << "] = " << old_Value << endl;
-			// }
+				// }
 
-			ENDCYCLE:
-				;
+			}
 		}
 	}
 }
