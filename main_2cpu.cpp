@@ -1,251 +1,144 @@
 /// \file
 /// Project:                Migration Sandbox \n
-/// File Name:              cpu.cpp \n
+/// File Name:              main.cpp \n
 /// Required Libraries:     none \n
-/// Date created:           Thurs Feb 18 2016 \n
-/// Engineers:              Khalique Ahmed
-///                         Conor Gardner
-///                         Dong Kai Wang\n
+/// Date created:           Wed Feb 17 2016 \n
+/// Engineers:              Conor Gardner \n
 /// Compiler:               g++ \n
-/// Target OS:              Ubuntu Linux 14.04 and Windows \n
+/// Target OS:              Ubuntu Linux 14.04 \n
 /// Target architecture:    x86 (64 bit) */
 
-#include <fstream>
 #include <iostream>
-#include <sstream>
-#include <string>
-#include <iomanip>
+#include "component.h"
 #include "cpu.h"
-#include "debug.h"
+#include "memory.h"
 #include "packet.h"
+#include "debug.h"
+#include "controller_global.h"
+#include "system_driver.h"
 
-cpu::cpu
-(
-    const std::string& trace_file_,
-    const std::string& name_,
-	unsigned max_Operations_,
-    unsigned initiation_interval_,
-    unsigned max_resident_packets_,
-    unsigned routing_latency_,
-    unsigned retirement_latency_
-)
-    : trace_file(trace_file_.c_str())
+using namespace std;
+
+int main(int argc, char** argv)
 {
-    
-    if (!this->trace_file.good())
-        std::cerr
-            << "Error. Failed to open "
-            << trace_file_
-            << " for writing"
-            << std::endl;
-    this->trace_file >> std::hex;
-    
-    this->name = name_;
-	this->active_Operations = 0;
-	this->max_Operations = max_Operations_;
-    this->initiation_interval = initiation_interval_;
-    check(max_resident_packets >= 4, "max_resident_packets_ should be at least 4");
-    this->max_resident_packets = max_resident_packets_;
-    this->routing_latency = routing_latency_;
-    this->retirement_latency = retirement_latency_;
-    
-    // generate() will always keep this container full, so we might as well
-    // just allocate it now
-    this->resident_packets.reserve(max_resident_packets_);
-    
-    this->cooldown = 0;
-    
-}
 
-unsigned cpu::generate()
-{
-    
-	// debugging checks
-    check
-    (
-        this->max_resident_packets >= 4,
-        "max_resident_packets needs to be at least 4"
-    );
-        
-    // Don't do anything if we've gone through the whole trace already
-	if (!this->trace_file.is_open() || !this->trace_file.good()) {
-		if (DEBUG) std::cout << "Trace Ended" << std::endl;
-		return this->min_packet_cooldown();
-	}
-    
-    // This actually should never (rarely) happen but is included for
-    // extra robustness against files that are corrupt but open successfully.
-    if (!this->trace_file.good())
-    {
-        std::cerr
-            << "Error. Failed to read trace file for CPU "
-            << this->name
-            << std::endl;
-        return 0;
-    }
-    
-    // If there are more than 3 available spaces for resident packets,
-    // read the memory trace to generate read/write packets until there are
-    // only 3 empty spaces left.
-    signed long space_to_fill =
-        (signed long)(this->max_resident_packets)
-      - 3
-      - (long signed)(this->resident_packets.size());
-    
-    if (space_to_fill > 0 && active_Operations <= max_Operations)
-    {
-        
-        unsigned new_size = this->max_resident_packets - 3;
-        this->resident_packets.reserve(new_size);
-        for (unsigned ix = this->resident_packets.size(); ix < new_size; ix++)
-        {
-            
-            // read a line from trace file
-			std::string line;
-			char rw;
-			uint64_t address;
+	// Topology:
+	//
+	// CPU0 -- MODULE0 -- MODULE1 -- MODULE2 -- MODULE3 -- CPU1
+	//
+	// 4x 1GB (32bit Physical Address)
 
-			if (getline(this->trace_file, line)) {
+	cpu* CPU0 = new cpu("trace_cpu_0.txt", "CPU0");
+	cpu* CPU1 = new cpu("trace_cpu_1.txt", "CPU1");
 
-				std::istringstream iss(line);
-				iss >> rw >> std::hex >> address;
+	memory* MODULE0 = new memory(0x00000000, 0x3FFFFFFF, "M0", 1, UINT_MAX, 10);
+	memory* MODULE1 = new memory(0x40000000, 0x7FFFFFFF, "M1", 1, UINT_MAX, 10);
+	memory* MODULE2 = new memory(0x80000000, 0xBFFFFFFF, "M2", 1, UINT_MAX, 10);
+	memory* MODULE3 = new memory(0xC0000000, 0xFFFFFFFF, "M3", 1, UINT_MAX, 10);
 
-				if (rw == 'R') {
-					active_Operations++;
-				}
-				else if (rw != 'R' && rw != 'W')
-				{
-					std::cerr
-						<< "Error. CPU "
-						<< this->name
-						<< " Encountered unknown access type '"
-						<< rw
-						<< "'.  While reading memory trace. Only 'R' or 'W' are allowed"
-						<< "\n Line: " << line << std::endl
-						<< std::endl;
-				}
-			}
-			else break;
-            
-            // if we reached the end of the file or encountered an error on
-            // the previous iteration, don't generate any more packets
-            if (!this->trace_file.good())
-            {
-                this->trace_file.close();
-                break;
-            }
-            
-            // calculate the destination component containing this address
-            addressable* destination = NULL;
-            unsigned num_addressables = this->memory_devices.size();
-            for (unsigned idx = 0; idx < num_addressables; idx++)
-            {
-                if (this->memory_devices[idx]->contains_address(address))
-                {
-                    destination = this->memory_devices[idx];
-                    break;
-                }
-            }
-            if (destination == NULL)
-            {
-                std::cerr
-                    << "Error. Memory address from trace was not within the range of any memories in this CPU "
-                    << this->name
-                    << "'s memory device table"
-                    << std::endl;
-                ix--; // no packet was generated, override for loop increment
-                continue;
-            }
-            
-			std::stringstream hex_addr;
-			hex_addr << std::hex << address;
-			std::string addr_str(hex_addr.str());
-
-            packet* p = new packet
-            (
-                this,           // original source
-                destination,    // memory containing requested data word
-				NULL,
-				0,
-                rw == 'R' ? READ_REQ : WRITE_REQ,
-                address,
-                4,  // bytes accessed
-                0,  // cooldown
-                this->name
-                    + (rw == 'R' ? " read " : " write ")
-                    + addr_str
-                    // name
-            );
-            this->resident_packets.push_back(p);
-
-			if (DEBUG) 
-				std::cout << "Generated \"" << p->name << '\"' << std::endl;
-
-        }
-        
-    }
-    
-    // All generated packets are pre-cooled, to keep the memory
-    // network saturated
-    return UINT_MAX;
-    
-}
-
-void cpu::add_addressable(addressable* a)
-{
-    check(a != NULL, "CPU can not register NULL addressable");
-    this->memory_devices.push_back(a);
-}
-
-unsigned cpu::port_in(unsigned packet_index, component * source)
-{
-	
-	// Debugging checks
-	check
+	controller_global* CONTROLLER = new controller_global
 		(
-			packet_index < source->resident_packets.size(),
-			"Tried to access out-of-bounds resident packet index"
-			);
-	check(source != NULL, "souce component cannot be NULL");
+			// -- Simulator Information
+			"Global Migration Controller", // Name
+			0, // Initiation Interval
+			32, // Max Resident Packets
+			0, // Routing Latency
+			0, // Cooldown
 
-	// make sure the component has not accepted another packet too recently
-	if (this->cooldown > 0)
-		return this->cooldown;
+			   // -- System Configuration
+			0x00000000, // First Address
+			0xFFFFFFFF, // Last Address
 
-	// make sure this component is not at its maximum packet capacity
-	if (this->resident_packets.size() >= this->max_resident_packets) {
-		// source->resident_packets[packet_index]->cooldown = 1;
-		return 1; //  this->min_packet_cooldown();
-	}
+						 // -- CPU Configuration
+			2, // Number of CPUs
 
-	// this component is capable of accepting new packets - move it
-	packet* p = this->resident_packets
-		[
-			this->move_packet(packet_index, source, this)
-		];
+			   // -- Memory Configuration
+			4, // Number of HMC Modules
+			32, // Address Length
+			30, // Internal Address Length (Per HMC Module)
+			4096, // Page Size (in Bytes)
+			200, // Epoch Length (in Cycles)
+			30, // Cost of Threshold
+			0 // Difference Threshold
+		);
 
+	// Add CPU and Modules to Controller
+	CONTROLLER->add_Cpu(CPU0);
+	CONTROLLER->add_Cpu(CPU1);
+	CONTROLLER->add_Module(MODULE0);
+	CONTROLLER->add_Module(MODULE1);
+	CONTROLLER->add_Module(MODULE2);
+	CONTROLLER->add_Module(MODULE3);
 
-	// Only Responses should reach here
-	if (p->type == READ_RESP) {
-		if (active_Operations <= 0) std::cerr << "CPU: Received Response when no Loads are in Flight" << std::endl;
-		active_Operations--;
-	}
-	else {
-		std::cerr << "CPU: Illegal Packet Type: " << p->type << std::endl;
-	}
+	// Specify Distance Information
+	CONTROLLER->add_Distance(CPU0, MODULE0, 1);
+	CONTROLLER->add_Distance(CPU0, MODULE1, 2);
+	CONTROLLER->add_Distance(CPU0, MODULE2, 3);
+	CONTROLLER->add_Distance(CPU0, MODULE3, 4);
 
-	// since this component just accepted a packet, the component
-	// itself needs to cool down before accepting another
-	this->cooldown = this->initiation_interval;
+	CONTROLLER->add_Distance(CPU1, MODULE0, 4);
+	CONTROLLER->add_Distance(CPU1, MODULE1, 3);
+	CONTROLLER->add_Distance(CPU1, MODULE2, 2);
+	CONTROLLER->add_Distance(CPU1, MODULE3, 1);
 
-	// calculate new packet cooldown
-	if (p->final_destination == this)
-		p->cooldown = this->retirement_latency;
-	else
-		p->cooldown = this->routing_latency;
+	// Add Routing
+	CPU0->add_route(CONTROLLER, CONTROLLER);
+	CPU1->add_route(CONTROLLER, CONTROLLER);
 
-	// the packet has left source, therefore its new cooldown on source
-	// is eternity
-	return UINT_MAX;
+	// Controller Routing Varies by CPU
+	// Specified in port_out of controller
+	CONTROLLER->add_route(CPU0, CPU0);
+	CONTROLLER->add_route(CPU1, CPU1);
+
+	MODULE0->add_route(CPU0, CONTROLLER);
+	MODULE0->add_route(CPU1, MODULE1);
+	MODULE0->add_route(CONTROLLER, CONTROLLER);
+	MODULE0->add_route(MODULE1, MODULE1);
+	MODULE0->add_route(MODULE2, MODULE1);
+	MODULE0->add_route(MODULE3, MODULE1);
+
+	MODULE1->add_route(CPU0, MODULE0);
+	MODULE1->add_route(CPU1, MODULE2);
+	MODULE1->add_route(CONTROLLER, MODULE0);
+	MODULE1->add_route(MODULE0, MODULE0);
+	MODULE1->add_route(MODULE2, MODULE2);
+	MODULE1->add_route(MODULE3, MODULE2);
+
+	MODULE2->add_route(CPU0, MODULE1);
+	MODULE2->add_route(CPU1, MODULE3);
+	MODULE2->add_route(CONTROLLER, MODULE3);
+	MODULE2->add_route(MODULE0, MODULE1);
+	MODULE2->add_route(MODULE1, MODULE1);
+	MODULE2->add_route(MODULE3, MODULE3);
+
+	MODULE3->add_route(CPU0, MODULE2);
+	MODULE3->add_route(CPU1, CONTROLLER);
+	MODULE3->add_route(CONTROLLER, CONTROLLER);
+	MODULE3->add_route(MODULE0, MODULE2);
+	MODULE3->add_route(MODULE1, MODULE2);
+	MODULE3->add_route(MODULE2, MODULE2);
+
+	CPU0->add_addressable(CONTROLLER);
+	CPU1->add_addressable(CONTROLLER);
+
+	// Register all components with a system driver which
+	// drives packets generation/routing/retirement
+	system_driver* motherboard = new system_driver;
+	motherboard->add_component(CPU0);
+	motherboard->add_component(CPU1);
+	motherboard->add_component(CONTROLLER);
+	motherboard->add_component(MODULE0);
+	motherboard->add_component(MODULE1);
+	motherboard->add_component(MODULE2);
+	motherboard->add_component(MODULE3);
+
+	// Run Simulation
+	motherboard->simulate();
+
+	// Free Heap
+	delete motherboard;
+
+	return (0);
+
 }
 
