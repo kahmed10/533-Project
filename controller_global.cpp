@@ -63,7 +63,8 @@ controller_global::controller_global
 	unsigned internal_address_length_,
 	unsigned page_size_,
 	unsigned epoch_length_,
-	unsigned cost_threshold_
+	unsigned cost_threshold_,
+	unsigned diff_threshold_
 )
 {
 	this->name = name_;
@@ -84,6 +85,7 @@ controller_global::controller_global
 	this->page_size = page_size_;
 	this->epoch_length = epoch_length_;
 	this->cost_threshold = cost_threshold_;
+	this->diff_threshold = diff_threshold_;
 
 	// Assign Index and Offset Bits
 	this->offset_length = (unsigned)ulog2((uint64_t)page_size);
@@ -260,6 +262,7 @@ unsigned controller_global::port_out(unsigned packet_index)
 	packet* p = this->resident_packets[packet_index];
 	component* immediate_destination;
 	if (p->type == READ_REQ || p->type == WRITE_REQ) {
+
 		cpu* cpuSource = (cpu*)p->original_source;
 		unsigned cpu_index = getIndexCPU(cpuSource);
 		unsigned nearest_mem_index = 0;
@@ -276,6 +279,9 @@ unsigned controller_global::port_out(unsigned packet_index)
 		// Lowest Distance should be 1
 		assert(cur_min == 1);
 		immediate_destination = (component*)memModules[nearest_mem_index];
+	}
+	else if (p->type == SWAP_REQ) {
+		immediate_destination = (component*)memModules[0];
 	}
 	else {
 		immediate_destination = this->routing_table[p->final_destination];
@@ -432,12 +438,10 @@ void controller_global::migrate(vector<uint64_t> candidates)
 				locked_Pages.push_back(page_A);
 				locked_Pages.push_back(page_B);
 
-				// if (DEBUG) {
 				cout << " \n Performed Migration: " << endl;
 				cout << " mapTable[" << old_index << "] = " << new_Value << endl;
 				cout << " mapTable[" << new_index << "] = " << old_Value << endl;
-				// }
-
+				
 			}
 		}
 	}
@@ -558,7 +562,8 @@ vector<uint64_t> controller_global::select_Candidates()
 	// Check History Table for Hot Pages
 	for (unsigned page_idx = 0; page_idx < mapTable_size; page_idx++) {
 		
-		unsigned total_access = 0;
+		unsigned total_access_hi = 0;
+		unsigned total_access_lo = 0;
 		unsigned total_cost = 0;
 
 		for (unsigned cpu_idx = 0; cpu_idx < num_cpu; cpu_idx++) {
@@ -568,14 +573,19 @@ vector<uint64_t> controller_global::select_Candidates()
 			unsigned mem_idx = getIndexMEM(mem_module);
 
 			total_cost += (hTable[page_idx][cpu_idx] * distanceTable[cpu_idx][mem_idx]);
-			total_access += hTable[page_idx][cpu_idx];
+
+			if (distanceTable[cpu_idx][mem_idx] >= 2)
+				total_access_hi += hTable[page_idx][cpu_idx];
+			else 
+				total_access_lo += hTable[page_idx][cpu_idx];
 		}
 
+		int diff = total_access_hi - total_access_lo;
+
 		// Evaluate Costs and Uniformity of Accesses
-		if (total_cost > cost_threshold) {
+		if (total_cost > cost_threshold && diff > diff_threshold) {
 
 			cout << "Evaluated cost = " << total_cost << endl;
-			cout << "Cost threshold = " << cost_threshold << endl;
 
 			// Needs to improve
 			if (candidate_Indices.size() <= 4)

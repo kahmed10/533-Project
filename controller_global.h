@@ -84,7 +84,9 @@ public:
 		/// Length in Number of Cycles per Epoch
 		unsigned epoch_length_ = 100000,
 		/// Migration Cost Threshold
-		unsigned cost_threshold_ = 5000			
+		unsigned cost_threshold_ = 5000,
+		/// Migration Difference Threshold
+		unsigned diff_threshold_ = 10
 	);
 
 	/// Delete Dynamic Memory
@@ -184,6 +186,7 @@ protected:
 
 	/// Migration Cost Threshold
 	unsigned cost_threshold;
+	unsigned diff_threshold;
 
 };
 
