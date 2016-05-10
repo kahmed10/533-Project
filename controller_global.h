@@ -1,15 +1,18 @@
 /// \file
-/// Project:                Migration Sandbox \n
-/// File Name:              controller.h \n
-/// Required Libraries:     none \n
-/// Date created:           May 3 2016 \n
-/// Engineers:              Dong Kai Wang \n
-/// Compiler:               g++ \n
-/// Target OS:              Scientific Linux 7.1 \n
+/// Project:                HMC Migration Simulator \n
+/// File Name:              controller_global.h \n
+/// Date created:           Mar 3 2016 \n
+/// Engineers:              Khalique Ahmed
+///                         Conor Gardner
+///                         Dong Kai Wang\n
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
 /// Target architecture:    x86_64 */
 
 #ifndef __HEADER_GUARD_CONTROLLER_GLOBAL__
 #define __HEADER_GUARD_CONTROLLER_GLOBAL__
+#define LINEAR 0
 
 #include <cstdint>
 #include <vector>

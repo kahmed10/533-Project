@@ -1,0 +1,23 @@
+
+Parsec 2.1 Benchmark Results
+
+Fluid Animate (1 CPU)
+
+No Migration: 13789202 Cycles
+Migration (500, 50, 8KB): 13516305 Cycles
+Migration (2000, 200, 8KB): 13471224 Cycles
+Migration (4000, 300, 8KB): 13493569 Cycles
+Migration (500, 50, 4KB): 13667775 Cycles
+
+Fluid Animate (4 CPU)
+
+
+x264 (1 CPU)
+
+No Migration: 8690424 Cycles
+Migration (2000, 100, 8KB): 7998893 Cycles
+
+x264 (4 CPU)
+
+
+

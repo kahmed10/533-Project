@@ -1,11 +1,13 @@
 /// \file
-/// Project:                Migration Sandbox \n
-/// File Name:              controller.cpp \n
-/// Required Libraries:     none \n
-/// Date created:           May 3 2016 \n
-/// Engineers:              Dong Kai Wang \n
-/// Compiler:               g++ \n
-/// Target OS:              Scientific Linux 7.1 \n
+/// Project:                HMC Migration Simulator \n
+/// File Name:              controller_global.cpp \n
+/// Date created:           Mar 3 2016 \n
+/// Engineers:              Khalique Ahmed
+///                         Conor Gardner
+///                         Dong Kai Wang\n
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
 /// Target architecture:    x86_64 */
 
 #include <stdio.h>
@@ -232,9 +234,6 @@ unsigned controller_global::port_in(unsigned packet_index, component* source)
 	else if (p->type == WRITE_REQ) {
 		store(p);
 	}
-	else {
-		cout << "Packet of Invalid Type: " << p->type << " at Controller, Name = " << p->name << endl;
-	}
 
 	// since this component just accepted a packet, the component
 	// itself needs to cool down before accepting another
@@ -287,7 +286,6 @@ unsigned controller_global::port_out(unsigned packet_index)
 		immediate_destination = this->routing_table[p->final_destination];
 	}
 
-	
 	if (immediate_destination == NULL) {
 		cout << "Error: No Immediate Destination for Packet " << p->name << " At Component: " << this->name << endl;
 		cout << "Press Enter to Exit" << endl;
@@ -319,9 +317,7 @@ unsigned controller_global::port_out(unsigned packet_index)
 
 unsigned controller_global::generate()
 {
-
-	cout << "Controller Cycle: " << cycle << endl;
-
+	
 	// Check for the End of Epoch
 	if (cycle >= epoch_length) {
 		// Select Candidates for Migration
@@ -352,27 +348,67 @@ void controller_global::migrate(vector<uint64_t> candidates)
 			uint64_t page = candidates[i];
 			unsigned ideal_cpu = 0;
 			unsigned ideal_mem = 0;
+			unsigned orig_mem = 0;
 
 			// Find CPU with most Accesses
 			unsigned cur_max = 0;
-			for (int cpu_idx = 0; cpu_idx < num_cpu; cpu_idx++) {
+			for (unsigned cpu_idx = 0; cpu_idx < num_cpu; cpu_idx++) {
 				if (hTable[page][cpu_idx] > cur_max) {
 					cur_max = hTable[page][cpu_idx];
 					ideal_cpu = cpu_idx;
 				}
 			}
 
+			uint64_t mapped_orig_id = page >> internal_index_length;
+			mapped_orig_id = mapped_orig_id << internal_index_length;
+			uint64_t mapped_module_offset = page & (pow2(internal_index_length) - 1);
+			uint64_t mapped_orig_idx = mapped_orig_id | mapped_module_offset;
+			uint64_t orig_mem_addr = 0;
+			for (unsigned module_id = 0; module_id < num_mem; module_id++) {
+				uint64_t check_idx = (module_id << internal_index_length) | (mapped_module_offset);
+				if (mapTable[check_idx] == mapped_orig_idx) {
+					orig_mem_addr = check_idx << offset_length;
+				}
+			}
+			orig_mem = getIndexMEM(find_Destination(orig_mem_addr));
+			uint64_t ideal_dist = distanceTable[ideal_cpu][orig_mem] - 1;
+			if (LINEAR) ideal_mem = orig_mem;
+
 			// Find Memory Module closest to that CPU
 			unsigned cur_min = UINT_MAX;
-			for (int mem_idx = 0; mem_idx < num_mem; mem_idx++) {
-				if (distanceTable[ideal_cpu][mem_idx] < cur_min) {
-					cur_min = distanceTable[ideal_cpu][mem_idx];
-					ideal_mem = mem_idx;
+			for (unsigned mem_idx = 0; mem_idx < num_mem; mem_idx++) {
+				if (LINEAR) {
+					if (distanceTable[ideal_cpu][mem_idx] == ideal_dist) {
+						ideal_mem = mem_idx;
+					}
+				}
+				else {
+					if (distanceTable[ideal_cpu][mem_idx] < cur_min) {
+						cur_min = distanceTable[ideal_cpu][mem_idx];
+						ideal_mem = mem_idx;
+					}
 				}
 			}
 
-			uint64_t address_A = page << offset_length;
-			memory* swapModule_A = find_Destination(address_A);
+			uint64_t mapped_module_id = memModules[ideal_mem]->get_first_address() >> internal_address_length;
+			mapped_module_id = mapped_module_id << internal_index_length;
+			uint64_t mapped_module_idx = mapped_module_id | mapped_module_offset;
+			uint64_t ideal_mem_addr = 0;
+			
+
+			for (unsigned module_id = 0; module_id < num_mem; module_id++) {
+				uint64_t check_idx = (module_id << internal_index_length) | (mapped_module_offset);
+				if (mapTable[check_idx] == mapped_module_idx) {
+					ideal_mem_addr = check_idx << offset_length;
+				}
+				if (mapTable[check_idx] == mapped_orig_idx) {
+					orig_mem_addr = check_idx << offset_length;
+				}
+			}
+			ideal_mem = getIndexMEM(find_Destination(ideal_mem_addr));
+			
+			
+			memory* swapModule_A = memModules[orig_mem];
 			memory* swapModule_B = memModules[ideal_mem];
 
 			if (swapModule_A != swapModule_B) {
@@ -392,7 +428,7 @@ void controller_global::migrate(vector<uint64_t> candidates)
 						4,  // bytes accessed
 						0,  // cooldown
 						"Migrate " + swapModule_A->name + " -> " + swapModule_B->name // name
-						);
+					);
 				packet* migrate_B = new packet
 					(
 						this, // Original source
@@ -404,7 +440,7 @@ void controller_global::migrate(vector<uint64_t> candidates)
 						4,  // bytes accessed
 						0,  // cooldown
 						"Migrate " + swapModule_B->name + " -> " + swapModule_A->name // name
-						);
+					);
 				this->resident_packets.push_back(migrate_A);
 				this->resident_packets.push_back(migrate_B);
 
@@ -438,10 +474,12 @@ void controller_global::migrate(vector<uint64_t> candidates)
 				locked_Pages.push_back(page_A);
 				locked_Pages.push_back(page_B);
 
-				cout << " \n Performed Migration: " << endl;
-				cout << " mapTable[" << old_index << "] = " << new_Value << endl;
-				cout << " mapTable[" << new_index << "] = " << old_Value << endl;
-				
+				if (DEBUG) {
+					cout << " \n Performed Migration: " << endl;
+					cout << " mapTable[" << old_index << "] = " << new_Value << endl;
+					cout << " mapTable[" << new_index << "] = " << old_Value << endl;
+				}
+
 			}
 		}
 	}
@@ -554,7 +592,7 @@ void controller_global::update_History(cpu * cpuSource, unsigned address)
 vector<uint64_t> controller_global::select_Candidates()
 {
 
-	cout << "End of Epoch, Evaluating Candidates for Migration" << endl;
+	if (DEBUG) cout << "End of Epoch, Evaluating Candidates for Migration" << endl;
 
 	// List of Candidates for Migration
 	vector<uint64_t> candidate_Indices;
@@ -585,10 +623,10 @@ vector<uint64_t> controller_global::select_Candidates()
 		// Evaluate Costs and Uniformity of Accesses
 		if (total_cost > cost_threshold && diff > diff_threshold) {
 
-			cout << "Evaluated cost = " << total_cost << endl;
+			if (DEBUG) cout << "Evaluated cost = " << total_cost << endl;
 
 			// Needs to improve
-			if (candidate_Indices.size() <= 4)
+			if (candidate_Indices.size() <= 8)
 				candidate_Indices.push_back(page_idx);
 		}
 	}

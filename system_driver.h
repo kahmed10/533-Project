@@ -1,13 +1,14 @@
-/** \file
- *  Project:                Migration Sandbox \n
- *  File Name:              system_driver.h \n
- *  Date created:           Thurs Mar 17 2016 \n
+/// \file
+/// Project:                HMC Migration Simulator \n
+/// File Name:              system_driver.h \n
+/// Date created:           Mar 17 2016 \n
 /// Engineers:              Khalique Ahmed
 ///                         Conor Gardner
 ///                         Dong Kai Wang\n
- *  Compiler:               g++ \n
- *  Target OS:              Ubuntu Linux 14.04 and Windows and Windows \n
- *  Target architecture:    x86 64-bit \n */
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
+/// Target architecture:    x86_64 */
  
 #ifndef __HEADER_GUARD_SYSTEM_DRIVER__
 #define __HEADER_GUARD_SYSTEM_DRIVER__

@@ -1,12 +1,14 @@
 /// \file
-/// Project:                Migration Sandbox \n
+/// Project:                HMC Migration Simulator \n
 /// File Name:              addressable.cpp \n
-/// Required Libraries:     none \n
-/// Date created:           Thurs Mar 17 2016 \n
-/// Engineers:              Conor Gardner \n
-/// Compiler:               g++ \n
-/// Target OS:              Ubuntu Linux 14.04 \n
-/// Target architecture:    x86 (64 bit) */
+/// Date created:           Mar 17 2016 \n
+/// Engineers:              Khalique Ahmed
+///                         Conor Gardner
+///                         Dong Kai Wang\n
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
+/// Target architecture:    x86_64 */
 
 #include "addressable.h"
 

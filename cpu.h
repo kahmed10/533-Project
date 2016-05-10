@@ -1,14 +1,14 @@
 /// \file
-/// Project:                Migration Sandbox \n
-/// File Name:              cpu_modified.h \n
-/// Required Libraries:     none \n
-/// Date created:           Thurs Feb 18 2016 \n
+/// Project:                HMC Migration Simulator \n
+/// File Name:              cpu.h \n
+/// Date created:           Feb 18 2016 \n
 /// Engineers:              Khalique Ahmed
 ///                         Conor Gardner
 ///                         Dong Kai Wang\n
-/// Compiler:               g++ \n
-/// Target OS:              Ubuntu Linux 14.04 and Windows \n
-/// Target architecture:    x86 (64 bit) */
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
+/// Target architecture:    x86_64 */
 
 #ifndef __HEADER_GUARD_CPU_MODIFIED__
 #define __HEADER_GUARD_CPU_MODIFIED__
@@ -33,7 +33,7 @@ class cpu : public component
             /// [in] See \ref component::name
             const std::string& name_ = "Unnamed CPU",
 			/// [in] Maximum number of Loads allowed in flight
-			unsigned max_Operations_ = 10,
+			unsigned max_Operations_ = 4,
             /// [in] See \ref component::initiation_interval
             unsigned initiation_interval_ = 0,
             /// [in] See \ref component::initiation_interval

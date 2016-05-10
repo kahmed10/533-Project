@@ -1,12 +1,14 @@
 /// \file
-/// Project:                Migration Sandbox \n
+/// Project:                HMC Migration Simulator \n
 /// File Name:              component.cpp \n
-/// Required Libraries:     none \n
-/// Date created:           Wed Feb 17 2016 \n
-/// Engineers:              Conor Gardner \n
-/// Compiler:               g++ \n
-/// Target OS:              Ubuntu Linux 14.04 \n
-/// Target architecture:    x86 (64 bit) */
+/// Date created:           Feb 17 2016 \n
+/// Engineers:              Khalique Ahmed
+///                         Conor Gardner
+///                         Dong Kai Wang\n
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
+/// Target architecture:    x86_64 */
 
 #include <unordered_map>
 #include <iostream>
@@ -215,15 +217,17 @@ if (DEBUG) {
 
 unsigned component::retire(unsigned packet_index)
 {
-// temporary for debugging. DELETE ME
-cout
-    << '\"'
-    << resident_packets[packet_index]->name
-    << "\" has retired at \""
-    << this->name
-    << '\"'
-    << endl;
-    
+
+	if (DEBUG) {
+		cout
+			<< '\"'
+			<< resident_packets[packet_index]->name
+			<< "\" has retired at \""
+			<< this->name
+			<< '\"'
+			<< endl;
+	}
+
     // Default behavior is to just delete the packet
     destroy_packet(packet_index);
     // The packet was destroyed, therefore it will never cooldown

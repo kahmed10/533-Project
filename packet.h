@@ -1,13 +1,14 @@
 /// \file
-/// Project:                Migration Sandbox \n
+/// Project:                HMC Migration Simulator \n
 /// File Name:              packet.h \n
-/// Date created:           Wed Feb 17 2017 \n
+/// Date created:           Feb 17 2016 \n
 /// Engineers:              Khalique Ahmed
 ///                         Conor Gardner
 ///                         Dong Kai Wang\n
-/// Compiler:               g++ \n
-/// Target OS:              Ubuntu Linux 14.04 and Windows \n
-/// Target architecture:    x86 64-bit \n */
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
+/// Target architecture:    x86_64 */
  
 #ifndef __HEADER_GUARD_PACKET__
 #define __HEADER_GUARD_PACKET__

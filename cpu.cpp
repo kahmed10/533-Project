@@ -1,14 +1,14 @@
 /// \file
-/// Project:                Migration Sandbox \n
+/// Project:                HMC Migration Simulator \n
 /// File Name:              cpu.cpp \n
-/// Required Libraries:     none \n
-/// Date created:           Thurs Feb 18 2016 \n
+/// Date created:           Feb 18 2016 \n
 /// Engineers:              Khalique Ahmed
 ///                         Conor Gardner
 ///                         Dong Kai Wang\n
-/// Compiler:               g++ \n
-/// Target OS:              Ubuntu Linux 14.04 and Windows \n
-/// Target architecture:    x86 (64 bit) */
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
+/// Target architecture:    x86_64 */
 
 #include <fstream>
 #include <iostream>
@@ -38,7 +38,7 @@ cpu::cpu
             << trace_file_
             << " for writing"
             << std::endl;
-    this->trace_file >> std::hex;
+	this->trace_file; // >> std::hex;
     
     this->name = name_;
 	this->active_Operations = 0;
@@ -103,16 +103,20 @@ unsigned cpu::generate()
             // read a line from trace file
 			std::string line;
 			char rw;
+			std::string reqtype;
 			uint64_t address;
 
 			if (getline(this->trace_file, line)) {
 
 				std::istringstream iss(line);
-				iss >> rw >> std::hex >> address;
+				iss >> reqtype; iss >> reqtype; // Skip first two words
+				iss >> reqtype >> std::hex >> address;
+				rw = reqtype.at(0);
 
 				if (rw == 'R') {
 					active_Operations++;
 				}
+				/*
 				else if (rw != 'R' && rw != 'W')
 				{
 					std::cerr
@@ -124,6 +128,7 @@ unsigned cpu::generate()
 						<< "\n Line: " << line << std::endl
 						<< std::endl;
 				}
+				*/
 			}
 			else break;
             

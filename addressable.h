@@ -1,14 +1,14 @@
 /// \file
-/// Project:                Migration Sandbox \n
+/// Project:                HMC Migration Simulator \n
 /// File Name:              addressable.h \n
-/// Required Libraries:     none \n
-/// Date created:           Thurs Mar 17 2016 \n
+/// Date created:           Mar 17 2016 \n
 /// Engineers:              Khalique Ahmed
 ///                         Conor Gardner
 ///                         Dong Kai Wang\n
-/// Compiler:               g++ \n
-/// Target OS:              Ubuntu Linux 14.04 and Windows \n
-/// Target architecture:    x86 (64 bit) */
+/// Compilers:              g++, vc++ \n
+/// Target OS:              Ubuntu Linux 14.04
+///							Windows 7 \n
+/// Target architecture:    x86_64 */
 
 #ifndef __HEADER_GUARD_ADDRESSABLE__
 #define __HEADER_GUARD_ADDRESSABLE__
