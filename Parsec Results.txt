@@ -9,7 +9,11 @@ Migration (2000, 100, 4KB): 13667775 Cycles
 
 Fluid Animate (2 CPU)
 
-
+No Migration: 14680033 Cycles
+Migration (5000, 800, 8KB): 11513550 Cycles
+Migration (5000, 400, 4KB): 10313560 Cycles
+Migration Linear (5000, 800, 8KB): 13817787 Cycles
+Migration Linear (5000, 400, 4KB): 13070491 Cycles
 
 Fluid Animate (4 CPU)
 
@@ -24,7 +28,11 @@ Migration (2000, 200, 8KB): 7998893 Cycles
 
 x264 (2 CPU)
 
-
+No Migration: 4293663 Cycles
+Migration (5000, 800, 8KB): 3980067 Cycles
+Migration (5000, 400, 4KB): 4068095 Cycles
+Migration Linear (5000, 800, 8KB): 3945994 Cycles
+Migration Linear (5000, 400, 4KB): 4206423 Cycles
 
 x264 (4 CPU)
 
@@ -32,3 +40,30 @@ No Migration: 14707425 Cycles
 Migration (5000, 1000, 8KB): 13207480 Cycles
 Migration (5000, 500, 4KB): 11168114 Cycles
 
+Black Scholes (2 CPU)
+
+No Migration: 2653284 Cycles
+Migration (2000, 400, 8KB): 1940444 Cycles
+Migration (2000, 200, 4KB): 2026806 Cycles
+Migration Linear (1000, 100, 8KB): 2302561 Cycles
+Migration Linear (1000, 80, 4KB): 2283718 Cycles
+
+Black Scholes (4 CPU)
+
+No Migration: 11288329 Cycles
+Migration (5000, 800, 8KB): 8002648 Cycles
+Migration (5000, 400, 4KB): 9331172 Cycles
+
+Stream Cluster (2 CPU)
+
+No Migration: 2854612 Cycles
+Migration (5000, 800, 8KB): 2638103 Cycles
+Migration (5000, 400, 4KB): 2808481 Cycles
+Migration Linear (1000, 100, 8KB): 2387957 Cycles
+Migration Linear (1000, 80, 4KB): 2381415 Cycles
+
+Stream Cluster (4 CPU)
+
+No Migration: 6385200 Cycles
+Migration (5000, 800, 8KB): 4929092 Cycles
+Migration (5000, 400, 4KB): 5674603 Cycles

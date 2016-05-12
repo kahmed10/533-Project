@@ -30,19 +30,19 @@ int main(int argc, char** argv)
 	//
 	// 8x 1GB (33bit Physical Address)
 
-	cpu* CPU0 = new cpu("trace_cpu_0.txt", "CPU0");
-	cpu* CPU1 = new cpu("trace_cpu_1.txt", "CPU1");
-	cpu* CPU2 = new cpu("trace_cpu_2.txt", "CPU2");
-	cpu* CPU3 = new cpu("trace_cpu_3.txt", "CPU3");
+	cpu* CPU0 = new cpu("trace_parsec_streamcluster_cpu0.txt", "CPU0");
+	cpu* CPU1 = new cpu("trace_parsec_streamcluster_cpu1.txt", "CPU1");
+	cpu* CPU2 = new cpu("trace_parsec_streamcluster_cpu0.txt", "CPU2");
+	cpu* CPU3 = new cpu("trace_parsec_streamcluster_cpu3.txt", "CPU3");
 
-	memory* MODULE0 = new memory(0x000000000, 0x03FFFFFFF, "M0", 1, UINT_MAX, 10);
-	memory* MODULE1 = new memory(0x040000000, 0x07FFFFFFF, "M1", 1, UINT_MAX, 10);
-	memory* MODULE2 = new memory(0x080000000, 0x0BFFFFFFF, "M2", 1, UINT_MAX, 10);
-	memory* MODULE3 = new memory(0x0C0000000, 0x0FFFFFFFF, "M3", 1, UINT_MAX, 10);
-	memory* MODULE4 = new memory(0x100000000, 0x13FFFFFFF, "M4", 1, UINT_MAX, 10);
-	memory* MODULE5 = new memory(0x140000000, 0x17FFFFFFF, "M5", 1, UINT_MAX, 10);
-	memory* MODULE6 = new memory(0x180000000, 0x1BFFFFFFF, "M6", 1, UINT_MAX, 10);
-	memory* MODULE7 = new memory(0x1C0000000, 0x1FFFFFFFF, "M7", 1, UINT_MAX, 10);
+	memory* MODULE0 = new memory(0x000000000, 0x03FFFFFFF, "M0", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE1 = new memory(0x040000000, 0x07FFFFFFF, "M1", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE2 = new memory(0x080000000, 0x0BFFFFFFF, "M2", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE3 = new memory(0x0C0000000, 0x0FFFFFFFF, "M3", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE4 = new memory(0x100000000, 0x13FFFFFFF, "M4", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE5 = new memory(0x140000000, 0x17FFFFFFF, "M5", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE6 = new memory(0x180000000, 0x1BFFFFFFF, "M6", 1, UINT_MAX, 10, 32, 4);
+	memory* MODULE7 = new memory(0x1C0000000, 0x1FFFFFFFF, "M7", 1, UINT_MAX, 10, 32, 4);
 
 	controller_global* CONTROLLER = new controller_global
 	(
@@ -50,8 +50,8 @@ int main(int argc, char** argv)
 		"Global Migration Controller", // Name
 		0, // Initiation Interval
 		32, // Max Resident Packets
-		0, // Routing Latency
-		0, // Cooldown
+		1, // Routing Latency
+		1, // Cooldown
 
 		// -- System Configuration
 		0x000000000, // First Address
@@ -65,9 +65,9 @@ int main(int argc, char** argv)
 		33, // Address Length
 		30, // Internal Address Length (Per HMC Module)
 		4096, // Page Size (in Bytes)
-		200, // Epoch Length (in Cycles)
-		50, // Cost of Threshold
-		5 // Difference Threshold
+		5000, // Epoch Length (in Cycles)
+		400, // Cost of Threshold
+		40 // Difference Threshold
 	);
 
 	// Add CPU and Modules to Controller
@@ -266,7 +266,7 @@ int main(int argc, char** argv)
 	// Free Heap
 	delete motherboard;
 
-	return (0);
+	return (getchar());
 
 }
 
